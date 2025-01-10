@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import UserForm from './UserForm';
 import {
   Table,
@@ -25,7 +25,6 @@ import { Edit, Delete } from '@mui/icons-material';
 
 const UserTable = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const initialUsers = location.state?.users || [];
 
   const [users, setUsers] = useState(initialUsers);

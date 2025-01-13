@@ -14,6 +14,10 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
+import ProductForm from './components/ProductManagement/ProductForm';
+import ForgotPassword from './components/Auth/ForgotPassword';
+
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -32,6 +36,7 @@ const theme = createTheme({
   },
   spacing: 8, // Default spacing
 });
+
 
 const App = () => {
   return (
@@ -53,7 +58,7 @@ const App = () => {
                 <Route path="/user-table" element={<UserTable />} />
                 
                 <Route path="/products" element={<ProductList />} />
-
+                <Route path="/ProductForm" element={<ProductForm />} />
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
@@ -61,6 +66,7 @@ const App = () => {
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />

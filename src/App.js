@@ -14,7 +14,8 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-
+import ProductForm from './components/ProductManagement/ProductForm';
+import ForgotPassword from './components/Auth/ForgotPassword';
 const App = () => {
   return (
     <AuthProvider>
@@ -29,7 +30,7 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
-
+                <Route path="/ProductForm" element={<ProductForm />} />
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
@@ -37,6 +38,7 @@ const App = () => {
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />

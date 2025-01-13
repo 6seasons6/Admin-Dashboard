@@ -14,11 +14,34 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
+
+import UserForm from './components/UserManagement/UserForm';
+import UserTable from './components/UserManagement/UserTable';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+  spacing: 8, // Default spacing
+});
+
+
 const App = () => {
   return (
     <AuthProvider>
+      <ThemeProvider theme={theme}>
       <Router>
         <div className="app">
           <Sidebar />
@@ -28,7 +51,12 @@ const App = () => {
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+                
                 <Route path="/users" element={<UserList />} />
+                <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
+                <Route path="/users/edit/:userId" element={<UserForm />} /> 
+                <Route path="/user-table" element={<UserTable />} />
+                
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
                 {/* Analytics Routes */}
@@ -49,6 +77,7 @@ const App = () => {
           </div>
         </div>
       </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 };

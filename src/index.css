@@ -12,7 +12,7 @@ body {
   background: #333;
   color: #fff;
   height: 100vh;
-  padding: 20px 10px;
+  padding: 80px 10px;
 }
 
 .sidebar ul {
@@ -47,21 +47,12 @@ body {
 
 .footer {
   text-align: center;
-  padding: 10px;
-  background: #988f0c;
-  color: #0a0000;
-  margin-top: 10rem;
-}
+  padding: 23px;
+  background: #6cbb6c;
+  color: #fff;
+    height: 26px;
+  }
 
 .content {
-  padding: 20px;
-}
-.login-container{
-  border: 2px solid black;
-  margin: 5px;
-  display: flex;
-  justify-content:center;
-  align-items: center;
-  color: rgba(224, 196, 10, 0.893);
-  font-size: 40px;
+  padding: 0;
 }

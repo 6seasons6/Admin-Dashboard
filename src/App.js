@@ -66,6 +66,7 @@ const App = () => {
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />

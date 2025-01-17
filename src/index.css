@@ -56,3 +56,11 @@ body {
 .content {
   padding: 0;
 }
+.customButton{
+  width: 5rem;
+  
+  
+}
+.css-1abvrni-MuiButtonBase-root-MuiButton-root{
+  margin-left: 8rem;
+}

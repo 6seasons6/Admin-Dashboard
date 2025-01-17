@@ -8,15 +8,20 @@ import loginpic from '../../images/loginpic.jpg';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { setAuthData } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(email, password).then((data) => {
-      setAuthData(data);
-      navigate('/dashboard');
-    });
+    try {
+      const data = await login(email, password);
+      setAuthData(data); // Save user data in context
+      localStorage.setItem('authToken', data.token); // Optional: Save token to local storage
+      navigate('/dashboard'); // Redirect to dashboard
+    } catch (error) {
+      setErrorMessage('Invalid email or password');
+    }
   };
 
   return (
@@ -32,7 +37,6 @@ const Login = () => {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        position: 'relative',
       }}
     >
       <Card sx={{ width: 400, padding: 2 }}>
@@ -40,6 +44,7 @@ const Login = () => {
           <Typography variant="h5" component="div" textAlign="center" marginBottom={2}>
             Login
           </Typography>
+          {errorMessage && <Typography color="red" textAlign="center">{errorMessage}</Typography>}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -65,7 +70,7 @@ const Login = () => {
               fullWidth
               required
             />
-             <Link
+            <Link
               href="/forgot-password"
               color="primary"
               underline="hover"
@@ -73,7 +78,7 @@ const Login = () => {
             >
               Forgot Password?
             </Link>
-            <Button variant="contained" type="submit" color="primary" style={{ width: '5rem',marginLeft: '9rem' }}>
+            <Button variant="contained" type="submit" color="primary" sx={{ width: '5rem', marginLeft: '9rem' }}>
               Login
             </Button>
           </Box>

@@ -17,7 +17,7 @@ import Register from './components/Auth/Register';
 
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
-
+//import ResetPassword from './components/Auth/ResetPassword';
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -67,7 +67,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-
+                
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports-old" element={<Reports />} />

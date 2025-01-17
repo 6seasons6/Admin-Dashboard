@@ -48,10 +48,20 @@ body {
 .footer {
   text-align: center;
   padding: 10px;
-  background: #333;
-  color: #fff;
+  background: #988f0c;
+  color: #0a0000;
+  margin-top: 10rem;
 }
 
 .content {
   padding: 20px;
+}
+.login-container{
+  border: 2px solid black;
+  margin: 5px;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  color: rgba(224, 196, 10, 0.893);
+  font-size: 40px;
 }

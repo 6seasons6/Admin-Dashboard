@@ -14,7 +14,6 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-
 const App = () => {
   return (
     <AuthProvider>
@@ -37,6 +36,7 @@ const App = () => {
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />

@@ -4,6 +4,7 @@ import { login } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import loginpic from '../../images/loginpic.jpg';
+ Temporary merge branch 1
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
 

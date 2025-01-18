@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Card, CardContent, Link } from '@mui/material';
 import { register } from '../../services/api';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import img3 from '../../images/img3.jpg';
 
 const Register = () => {
@@ -12,6 +13,7 @@ const Register = () => {
   });
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +23,7 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { username, email, password, confirmPassword } = formData;
 
@@ -31,16 +33,16 @@ const Register = () => {
       return;
     }
 
-    register(username, email, password)
-      .then(() => {
-        setSuccessMessage('Registration successful!');
-        setErrorMessage('');
-        setFormData({ username: '', email: '', password: '', confirmPassword: '' });
-      })
-      .catch(() => {
-        setErrorMessage('Registration failed. Please try again.');
-        setSuccessMessage('');
-      });
+    try {
+      await register(username, email, password);
+      setSuccessMessage('Registration successful!');
+      setErrorMessage('');
+      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
+      navigate('/login'); // Redirect to login page
+    } catch (error) {
+      setErrorMessage('User already registered');
+      setSuccessMessage('');
+    }
   };
 
   return (
@@ -112,7 +114,7 @@ const Register = () => {
               fullWidth
               required
             />
-            <Button variant="contained" type="submit" style={{ width: '5rem',marginLeft: '9rem' }}>
+            <Button variant="contained" type="submit" style={{ width: '5rem', marginLeft: '9rem' }}>
               Register
             </Button>
           </Box>
@@ -120,7 +122,7 @@ const Register = () => {
       </Card>
       <Typography variant="body2" sx={{ marginTop: 2 }}>
         Already have an account?{' '}
-        <Link href="/login" color="red"underline="hover">
+        <Link href="/login" color="red" underline="hover">
           Login Here
         </Link>
       </Typography>

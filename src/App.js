@@ -19,7 +19,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
-
+//import ResetPassword from './components/Auth/ResetPassword';
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -73,6 +73,10 @@ const App = () => {
                 <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
 
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+
+                
+
+
 
 
                 {/* Legacy Routes (if needed) */}

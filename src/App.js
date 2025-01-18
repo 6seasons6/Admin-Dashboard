@@ -12,8 +12,10 @@ import UserList from './components/UserManagement/UserList';
 import ProductList from './components/ProductManagement/ProductList';
 import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
+import Graphs from './components/Analytics/graphs';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
@@ -62,17 +64,23 @@ const App = () => {
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
+                <Route path="/analytics/graphs" element={<Graphs />} />
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
+
                 <Route path="/forgot-password" element={<ForgotPassword />} />
+
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports-old" element={<Reports />} />
               </Routes>
             </div>
+            <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com"></GoogleOAuthProvider>
             <Footer />
           </div>
         </div>

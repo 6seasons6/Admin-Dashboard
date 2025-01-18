@@ -5,6 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import loginpic from '../../images/loginpic.jpg';
 
+
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +19,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const data = await login(email, password);
       setAuthData(data); // Save user data in context
@@ -22,7 +28,22 @@ const Login = () => {
     } catch (error) {
       setErrorMessage('Invalid email or password');
     }
+
+    login(email, password).then((data) => {
+      setAuthData(data);
+      navigate('/Dashboard');
+    });
+
   };
+  const handleLoginSuccess = (credentialResponse) => {
+    console.log('Google Sign-In Success:', credentialResponse);
+    // Send the token to your backend for verification and further processing
+    navigate("./Dashboard");
+  };
+  const handleLoginFailure = (error) => {
+    console.error('Google Sign-In Failed:', error);
+  };
+
 
   return (
     <Box
@@ -81,6 +102,14 @@ const Login = () => {
             <Button variant="contained" type="submit" color="primary" sx={{ width: '5rem', marginLeft: '9rem' }}>
               Login
             </Button>
+            <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com">
+      <div style={{ textAlign: 'center', marginTop: '50px',marginBottom:'10px' }}>
+        <GoogleLogin
+          onSuccess={handleLoginSuccess}
+          onError={handleLoginFailure}
+        />
+      </div>
+    </GoogleOAuthProvider>
           </Box>
         </CardContent>
       </Card>

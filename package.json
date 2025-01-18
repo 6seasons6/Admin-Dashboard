@@ -6,10 +6,17 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.0",
+
+    "@mui/material": "^6.4.0",
+
     "@mui/material": "^6.3.1",
     "@react-oauth/google": "^0.12.1",
+<<<<<<< HEAD
     "@mui/icons-material": "^6.3.1",
     "@mui/material": "^6.3.1",
+=======
+
+>>>>>>> 2925fe8418f08121c2d2fb9e0cf84a3b0bed057d
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
     "react": "^19.0.0",

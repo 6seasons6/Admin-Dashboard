@@ -12,6 +12,7 @@ import UserList from './components/UserManagement/UserList';
 import ProductList from './components/ProductManagement/ProductList';
 import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
+import Graphs from './components/Analytics/graphs';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -63,6 +64,7 @@ const App = () => {
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
+                <Route path="/analytics/graphs" element={<Graphs />} />
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />

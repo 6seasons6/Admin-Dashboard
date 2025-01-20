@@ -34,16 +34,20 @@ const Login = () => {
     });
 
   };
-  const handleLoginSuccess = (credentialResponse) => {
-    console.log('Google Sign-In Success:', credentialResponse);
-    // Send the token to your backend for verification and further processing
-    navigate("./Dashboard");
+  const handleLoginSuccess = (response) => {
+    // Handle login success here
+    console.log(response);
+
+    // You can optionally save the token in local storage, or manage authentication state
+    localStorage.setItem('googleAuthToken', response.credential);
+
+    // Redirect to the dashboard page
+    navigate('/dashboard');
   };
+
   const handleLoginFailure = (error) => {
-    console.error('Google Sign-In Failed:', error);
+    console.error("Login failed", error);
   };
-
-
   return (
     <Box
       sx={{

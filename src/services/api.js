@@ -90,3 +90,19 @@ export const addProduct = (product) =>
         headers: { 'Content-Type': 'application/json' },
       }).then((res) => res.json());
     
+      
+export const getUserData = async (token) => {
+  const response = await fetch('http://localhost:5000/api/user', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data');
+  }
+
+  return await response.json();
+};

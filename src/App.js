@@ -12,12 +12,14 @@ import UserList from './components/UserManagement/UserList';
 import ProductList from './components/ProductManagement/ProductList';
 import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
-import Graphs from './components/Analytics/graphs';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 
+import PersonalisedDashboard from './pages/PersonalisedDashboard';
+
+
 import ProductTable from './components/ProductManagement/ProductTable';
-import ProductForm from './components/ProductManagement/ProductForm';
+
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -27,6 +29,7 @@ import ForgotPassword from './components/Auth/ForgotPassword';
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 
 const theme = createTheme({
   palette: {
@@ -58,6 +61,7 @@ const App = () => {
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<PersonalisedDashboard />} />
                 
                 <Route path="/users" element={<UserList />} />
 
@@ -76,8 +80,7 @@ const App = () => {
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
-                <Route path="/analytics/graphs" element={<Graphs />} />
-
+                
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -96,7 +99,7 @@ const App = () => {
                 <Route path="/reports-old" element={<Reports />} />
               </Routes>
             </div>
-            <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com"></GoogleOAuthProvider>
+            
             <Footer />
           </div>
         </div>

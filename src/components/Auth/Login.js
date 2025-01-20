@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Card, CardContent, Typography, Link } from '@mui/material';
-import { login } from '../../services/api';
+import { login } from '../../services/api'; // Replace with your API call
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import loginpic from '../../images/loginpic.jpg';
 
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -21,9 +20,9 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const data = await login(email, password);
-      setAuthData(data); // Save user data in context
-      localStorage.setItem('authToken', data.token); // Optional: Save token to local storage
+      const data = await login(email, password); // Call API
+      setAuthData({ token: data.token, user: data.user });
+      localStorage.setItem('authToken', data.token); // Save token locally
       navigate('/dashboard'); // Redirect to dashboard
     } catch (error) {
       setErrorMessage('Invalid email or password');
@@ -53,19 +52,15 @@ const Login = () => {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        backgroundImage: `url(${loginpic})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundColor: '#282c34',
       }}
     >
-      <Card sx={{ width: 400, padding: 2 }}>
+      <Card sx={{ width: 400, padding: 3, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)' }}>
         <CardContent>
-          <Typography variant="h5" component="div" textAlign="center" marginBottom={2}>
+          <Typography variant="h4" textAlign="center" marginBottom={2} color="#673ab7">
             Login
           </Typography>
-          {errorMessage && <Typography color="red" textAlign="center">{errorMessage}</Typography>}
+          {errorMessage && <Typography color="error" textAlign="center">{errorMessage}</Typography>}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -95,11 +90,11 @@ const Login = () => {
               href="/forgot-password"
               color="primary"
               underline="hover"
-              sx={{ alignSelf: 'flex-end', fontSize: '0.9rem', marginBottom: 2 }}
+              sx={{ alignSelf: 'flex-end', fontSize: '0.9rem' }}
             >
               Forgot Password?
             </Link>
-            <Button variant="contained" type="submit" color="primary" sx={{ width: '5rem', marginLeft: '9rem' }}>
+            <Button variant="contained" type="submit" color="primary" sx={{ width: '100%' }}>
               Login
             </Button>
             <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com">
@@ -113,9 +108,9 @@ const Login = () => {
           </Box>
         </CardContent>
       </Card>
-      <Typography variant="body2" sx={{ marginTop: 2 }}>
+      <Typography variant="body2" sx={{ marginTop: 2, color: 'white' }}>
         Don't have an account?{' '}
-        <Link href="/register" color="red" underline="hover">
+        <Link href="/register" color="secondary" underline="hover">
           Register Here
         </Link>
       </Typography>

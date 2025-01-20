@@ -14,7 +14,15 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
 import PersonalisedDashboard from './pages/PersonalisedDashboard';
+
+
+import ProductTable from './components/ProductManagement/ProductTable';
+
+
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
 //import ResetPassword from './components/Auth/ResetPassword';
@@ -39,6 +47,7 @@ const theme = createTheme({
 });
 
 
+
 const App = () => {
   return (
     <AuthProvider>
@@ -55,12 +64,19 @@ const App = () => {
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
                 
                 <Route path="/users" element={<UserList />} />
+
+                <Route path="/ProductList" element={<ProductList />} />
+                <Route path="/ProductForm" element={<ProductForm/>} />
+                <Route path="/ProductTable" element={<ProductTable/>} />
+
+
                 <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
                 <Route path="/users/edit/:userId" element={<UserForm />} /> 
                 <Route path="/user-table" element={<UserTable />} />
                 
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
+
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
@@ -94,3 +110,4 @@ const App = () => {
 };
 
 export default App;
+

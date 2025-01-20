@@ -1,31 +1,48 @@
+
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Button } from '@mui/material';
 import React from 'react';
 
-const ProductTable = ({ products }) => (
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Stock</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {products.map((product) => (
-        <tr key={product.id}>
-          <td>{product.id}</td>
-          <td>{product.name}</td>
-          <td>{product.price}</td>
-          <td>{product.stock}</td>
-          <td>
-            <button>Edit</button>
-            <button>Delete</button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+
+const ProductTable = ({ products= []}) => (
+  <TableContainer component={Paper}>
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableCell>ID</TableCell>
+          <TableCell>Name</TableCell>
+          <TableCell>Price</TableCell>
+          <TableCell>Stock</TableCell>
+          <TableCell>Actions</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {products.map((product) => (
+          <TableRow key={product.id}>
+            <TableCell>{product.id}</TableCell>
+            <TableCell>{product.name}</TableCell>
+            <TableCell>{product.price}</TableCell>
+            <TableCell>{product.stock}</TableCell>
+            <TableCell>
+              <Button variant="contained" color="primary" style={{ marginRight: 8 }}>
+                Edit
+              </Button>
+              <Button variant="contained" color="secondary">
+                Delete
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  </TableContainer>
 );
 
 export default ProductTable;
+
+
+
+ 
+
+
+
+

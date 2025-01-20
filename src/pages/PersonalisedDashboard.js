@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CircularProgress} from '@mui/material';
-// import HomeIcon from '@mui/icons-material/Home';
-// import BarChartIcon from '@mui/icons-material/BarChart';
-// import ChatIcon from '@mui/icons-material/Chat';
-// import NotificationsIcon from '@mui/icons-material/Notifications';
-// import SettingsIcon from '@mui/icons-material/Settings';
 import { getUserData } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -91,7 +86,6 @@ const DashboardApp = () => {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #6a11cb, #2575fc)' }}>
-      {/* Sidebar */}
       
       {/* Dashboard Content */}
       <Box sx={{ flex: 1, padding: 3 }}>

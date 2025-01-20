@@ -14,7 +14,7 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-
+import PersonalisedDashboard from './pages/PersonalisedDashboard';
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
 //import ResetPassword from './components/Auth/ResetPassword';
@@ -51,6 +51,7 @@ const App = () => {
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<PersonalisedDashboard />} />
                 
                 <Route path="/users" element={<UserList />} />
                 <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}

@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
-
 const app = express();
 
 
@@ -14,7 +13,11 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(cors({
+  origin: 'http://localhost:3000', // Adjust this to your frontend's URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 
 // MongoDB Connection
@@ -89,18 +92,21 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Simulate a token (in real scenarios, use JWT or similar library)
-    const token = `fake-jwt-token-${user._id}`;
-
-    res.status(200).json({ 
-      message: 'Login successful', 
-      user: { id: user._id, username: user.username, email: user.email }, 
-      token 
+    // Simulate a token 
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // Token expiration time
     });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
+  
+    res.status(200).json({ 
+       message: 'Login successful', 
+       user: { id: user._id, username: user.username, email: user.email }, 
+      token 
+   });
+   } catch (error) {
+   console.error('Login error:', error);
+     res.status(500).json({ message: 'Server error' });
+   }
+  
 });
 
 
@@ -317,6 +323,49 @@ app.get('/reset-password', (req, res) => {
   });
 });
 
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Extract token
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' }); // Unauthorized if no token
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      console.error('Token verification failed:', err);
+      return res.status(403).json({ message: 'Invalid or expired token' }); // Forbidden if token invalid
+    }
+
+    req.user = user; // Attach user data to the request object
+    next(); // Proceed to next middleware or route handler
+  });
+};
+
+
+// Example Express route for fetching user data
+app.get('/api/user', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming you have middleware to authenticate and set req.user
+    const user = await User.findById(userId);
+    console.log('Fetching user for ID:', userId);
+console.log('Database user:', user);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User  not found' });
+    }
+    res.json({
+      name: user.username,
+      email: user.email,
+      monthlyData: user.monthlyData, // Adjust according to your user schema
+      dailyData: user.dailyData,
+      yearlyData: user.yearlyData,
+    });
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;

@@ -12,14 +12,43 @@ import UserList from './components/UserManagement/UserList';
 import ProductList from './components/ProductManagement/ProductList';
 import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
+import Graphs from './components/Analytics/graphs';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
 import ProductTable from './components/ProductManagement/ProductTable';
 import ProductForm from './components/ProductManagement/ProductForm';
+
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
+import ProductForm from './components/ProductManagement/ProductForm';
+import ForgotPassword from './components/Auth/ForgotPassword';
+//import ResetPassword from './components/Auth/ResetPassword';
+import UserForm from './components/UserManagement/UserForm';
+import UserTable from './components/UserManagement/UserTable';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+  spacing: 8, // Default spacing
+});
+
+
 
 const App = () => {
   return (
     <AuthProvider>
+      <ThemeProvider theme={theme}>
       <Router>
         <div className="app">
           <Sidebar />
@@ -29,28 +58,50 @@ const App = () => {
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+                
                 <Route path="/users" element={<UserList />} />
+
                 <Route path="/ProductList" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm/>} />
                 <Route path="/ProductTable" element={<ProductTable/>} />
 
+
+                <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
+                <Route path="/users/edit/:userId" element={<UserForm />} /> 
+                <Route path="/user-table" element={<UserTable />} />
+                
+                <Route path="/products" element={<ProductList />} />
+                <Route path="/ProductForm" element={<ProductForm />} />
+
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
+                <Route path="/analytics/graphs" element={<Graphs />} />
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
+
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
+                
+
+
+
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports-old" element={<Reports />} />
               </Routes>
             </div>
+            <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com"></GoogleOAuthProvider>
             <Footer />
           </div>
         </div>
       </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 };

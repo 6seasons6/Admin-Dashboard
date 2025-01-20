@@ -16,6 +16,14 @@ export const addProduct = (product) =>
     headers: { 'Content-Type': 'application/json' },
   }).then((res) => res.json());
 
+  export const updateProduct = (product) =>
+    fetch(`${API_URL}/products`, {
+      method: 'POST',  
+      body: JSON.stringify(product),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => res.json());
+ 
+
 export const login = (email, password) =>
   fetch(`${API_URL}/auth/login`, {
     method: 'POST',

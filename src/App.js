@@ -14,6 +14,8 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import ProductTable from './components/ProductManagement/ProductTable';
+import ProductForm from './components/ProductManagement/ProductForm';
 
 const App = () => {
   return (
@@ -28,7 +30,9 @@ const App = () => {
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/users" element={<UserList />} />
-                <Route path="/products" element={<ProductList />} />
+                <Route path="/ProductList" element={<ProductList />} />
+                <Route path="/ProductForm" element={<ProductForm/>} />
+                <Route path="/ProductTable" element={<ProductTable/>} />
 
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
@@ -52,3 +56,4 @@ const App = () => {
 };
 
 export default App;
+

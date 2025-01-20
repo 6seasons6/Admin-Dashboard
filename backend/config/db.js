@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mydatabase', {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/admin-dashboard', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

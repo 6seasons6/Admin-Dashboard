@@ -20,9 +20,6 @@ import PersonalisedDashboard from './pages/PersonalisedDashboard';
 
 import ProductTable from './components/ProductManagement/ProductTable';
 
-
-import { GoogleOAuthProvider } from '@react-oauth/google';
-
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
 //import ResetPassword from './components/Auth/ResetPassword';

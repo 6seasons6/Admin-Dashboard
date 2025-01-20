@@ -4,6 +4,7 @@ import { getUserData } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+import { useNavigate } from 'react-router-dom';
 
 // Register all necessary components for charts
 Chart.register(...registerables);
@@ -13,6 +14,17 @@ const DashboardApp = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if the user is logged in (e.g., by checking the token in localStorage)
+    const authToken = localStorage.getItem('googleAuthToken');
+    if (!authToken) {
+      // If not logged in, redirect to the login page
+      navigate('/');
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {

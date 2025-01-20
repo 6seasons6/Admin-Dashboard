@@ -15,6 +15,10 @@ import UserActivity from './components/Analytics/UserActivity';
 import Graphs from './components/Analytics/graphs';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+
+import ProductTable from './components/ProductManagement/ProductTable';
+import ProductForm from './components/ProductManagement/ProductForm';
+
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import ProductForm from './components/ProductManagement/ProductForm';
@@ -40,6 +44,7 @@ const theme = createTheme({
 });
 
 
+
 const App = () => {
   return (
     <AuthProvider>
@@ -55,12 +60,19 @@ const App = () => {
                 <Route path="/" element={<Dashboard />} />
                 
                 <Route path="/users" element={<UserList />} />
+
+                <Route path="/ProductList" element={<ProductList />} />
+                <Route path="/ProductForm" element={<ProductForm/>} />
+                <Route path="/ProductTable" element={<ProductTable/>} />
+
+
                 <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
                 <Route path="/users/edit/:userId" element={<UserForm />} /> 
                 <Route path="/user-table" element={<UserTable />} />
                 
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
+
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
@@ -95,3 +107,4 @@ const App = () => {
 };
 
 export default App;
+

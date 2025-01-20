@@ -4,6 +4,11 @@ import { login } from '../../services/api'; // Replace with your API call
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
+
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
+
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,6 +18,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const data = await login(email, password); // Call API
       setAuthData({ token: data.token, user: data.user });
@@ -21,7 +27,22 @@ const Login = () => {
     } catch (error) {
       setErrorMessage('Invalid email or password');
     }
+
+    login(email, password).then((data) => {
+      setAuthData(data);
+      navigate('/Dashboard');
+    });
+
   };
+  const handleLoginSuccess = (credentialResponse) => {
+    console.log('Google Sign-In Success:', credentialResponse);
+    // Send the token to your backend for verification and further processing
+    navigate("./Dashboard");
+  };
+  const handleLoginFailure = (error) => {
+    console.error('Google Sign-In Failed:', error);
+  };
+
 
   return (
     <Box
@@ -76,6 +97,14 @@ const Login = () => {
             <Button variant="contained" type="submit" color="primary" sx={{ width: '100%' }}>
               Login
             </Button>
+            <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com">
+      <div style={{ textAlign: 'center', marginTop: '50px',marginBottom:'10px' }}>
+        <GoogleLogin
+          onSuccess={handleLoginSuccess}
+          onError={handleLoginFailure}
+        />
+      </div>
+    </GoogleOAuthProvider>
           </Box>
         </CardContent>
       </Card>

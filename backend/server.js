@@ -96,7 +96,7 @@ app.post('/api/auth/login', async (req, res) => {
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '1h', // Token expiration time
     });
-  
+    
     res.status(200).json({ 
        message: 'Login successful', 
        user: { id: user._id, username: user.username, email: user.email }, 

@@ -9,10 +9,9 @@ body {
 
 .sidebar {
   width: 200px;
-  background: #333;
-  color: #fff;
-  height: 100vh;
-  padding: 20px 10px;
+  background-color: rgba(172, 213, 223, 0.5);
+    height: 100vh;
+  padding: 80px 10px;
 }
 
 .sidebar ul {
@@ -25,7 +24,7 @@ body {
 }
 
 .sidebar ul li a {
-  color: #fff;
+  color: #4180c9;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -47,11 +46,102 @@ body {
 
 .footer {
   text-align: center;
-  padding: 10px;
-  background: #333;
-  color: #fff;
-}
+  padding: 23px;
+  background-color: rgb(118, 245, 224);   height: 26px;
+  color: white;
+  }
 
 .content {
-  padding: 20px;
+  padding: 0;
+}
+.customButton{
+  width: 5rem;
+  
+  
+}
+.css-1abvrni-MuiButtonBase-root-MuiButton-root{
+  margin-left: 8rem;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;           
+  padding: 10px 20px;
+  
+  color: white;
+}
+
+.navbar-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  
+  color: white;
+}
+
+.navbar-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.icon-circle {
+  width: 40px;           /* Circle diameter */
+  height: 40px;          /* Circle diameter */
+  border-radius: 50%;    /* Makes it a circle */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for effect */
+  transition: background-color 0.3s;
+}
+
+.icon-circle:hover {
+  background-color: #f0a500; /* Change color on hover */
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 20px; /* Align with the icon */
+  top: 50px;   /* Position below the icon */
+  
+  color: white;
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-menu li {
+  padding: 8px 12px;
+}
+
+.dropdown-menu li:hover {
+  background-color: #555;
+}
+
+.dropdown-menu a {
+  text-decoration: none;
+  color: white;
+}
+
+.dropdown-menu a:hover {
+  color: #f0a500;
+}
+/* sidebar.css */
+.logo1 {
+  margin-top: -6rem;
+}
+.logo1 img {
+  display: block;
+  width: 80%;
 }

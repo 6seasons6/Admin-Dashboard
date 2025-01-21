@@ -1,9 +1,19 @@
+// src/pages/PersonalisedDashboard.js
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CircularProgress } from '@mui/material';
+
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { useAuth } from '../contexts/AuthContext';
 //import { getUserData } from '../services/api';
+
+import { getUserData } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Doughnut, Bar } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+import { useNavigate } from 'react-router-dom';
+import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+
 
 // Register all necessary components for charts
 Chart.register(...registerables);
@@ -13,6 +23,7 @@ const DashboardApp = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,9 +129,22 @@ const DashboardApp = () => {
   };
 
   return (
+
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
+
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',  // Ensure content is stacked vertically
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+      }}
+    >
+      <Box sx={{ flex: 1, padding: 3 }}>
+        <Typography variant="h4" gutterBottom color="white">
+
           Welcome, {userData.name}
         </Typography>
         <Grid container spacing={3}>
@@ -177,8 +201,18 @@ const DashboardApp = () => {
           </Grid>
         </Grid>
       </Box>
+        {/* Sales Analytics Sidebar or Below Section */}
+      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+        {/* If you want a sidebar layout */}
+        <Box sx={{ flex: 3, paddingRight: 3 }}>
+          <SalesAnalytics />
+        </Box>
+
+        {/* If you want it below the product management */}
+        {/* <SalesAnalytics /> */}
+      </Box>
     </Box>
-  );
+      );
 };
 
 export default DashboardApp;

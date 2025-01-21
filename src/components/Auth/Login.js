@@ -30,7 +30,7 @@ const Login = () => {
 
     login(email, password).then((data) => {
       setAuthData(data);
-      navigate('/Dashboard');
+      navigate('/dashboard');
     });
 
   };

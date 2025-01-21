@@ -86,7 +86,6 @@ const App = () => {
                 <Route path="/analytics/activity" element={<UserActivity />} />
 
 
-
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />

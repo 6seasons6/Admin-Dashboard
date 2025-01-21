@@ -36,6 +36,9 @@ export const addProduct = (product) =>
     headers: { 'Content-Type': 'application/json' },
   }).then((res) => res.json());
 
+
+  
+
   export const updateProduct = (product) => 
     fetch(`${API_URL}/products`, {
       method: 'POST',  
@@ -43,23 +46,63 @@ export const addProduct = (product) =>
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => res.json());
 
-export const login = (email, password) =>
-  fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-    headers: { 'Content-Type': 'application/json' },
-  }).then((res) => res.json());
+ 
 
-export const register = (name, email, password) =>
-  fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    body: JSON.stringify({ name, email, password }),
-    headers: { 'Content-Type': 'application/json' },
-  }).then((res) => res.json());
-  export const forgotPassword = (email) =>
-    fetch(`${API_URL}/auth/forgotpassword`, {
+
+
+    export const login = (email, password) =>
+      fetch(`http://localhost:5000/api/auth/login`, {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+      }).then((res) => {
+        if (!res.ok) {
+          throw new Error('Invalid login credentials'); // Handle errors gracefully
+        }
+        return res.json();
+      });
+    
+
+  export const register = (username, email, password) =>
+    fetch(`http://localhost:5000/api/auth/register`, {
       method: 'POST',
-      body: JSON.stringify({  email }),
+      body: JSON.stringify({ username, email, password }),
       headers: { 'Content-Type': 'application/json' },
-    }).then((res) => res.json());
-  
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error('Failed to register'); // Handle bad responses
+      }
+      return res.json();
+    });
+
+
+    export const forgotPassword = (email) =>
+      fetch(`http://localhost:5000/api/auth/forgot-password`, {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+      }).then((res) => res.json());
+    
+    export const resetPassword = (token, newPassword) =>
+      fetch(`http://localhost:5000/api/auth/reset-password`, {
+        method: 'POST',
+        body: JSON.stringify({ token, newPassword }),
+        headers: { 'Content-Type': 'application/json' },
+      }).then((res) => res.json());
+    
+      
+export const getUserData = async (token) => {
+  const response = await fetch('http://localhost:5000/api/user', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch user data');
+  }
+
+  return await response.json();
+};

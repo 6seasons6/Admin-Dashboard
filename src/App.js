@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
-import Reports from './pages/Reports';
+import Graphs from './pages/Reports';
 import './App.css'; // Make sure the path is correct
 import { AuthProvider } from './contexts/AuthContext';
 import UserList from './components/UserManagement/UserList';
@@ -48,7 +48,6 @@ const theme = createTheme({
 const App = () => {
   return (
     <AuthProvider>
-      <ThemeProvider theme={theme}>
       <Router>
         <div className="app">
           <Sidebar />
@@ -78,6 +77,7 @@ const App = () => {
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
                 
+
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
@@ -93,7 +93,7 @@ const App = () => {
 
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
-                <Route path="/reports-old" element={<Reports />} />
+                <Route path="/reports" element={<Graphs />} />
               </Routes>
             </div>
             
@@ -101,7 +101,6 @@ const App = () => {
           </div>
         </div>
       </Router>
-      </ThemeProvider>
     </AuthProvider>
   );
 };

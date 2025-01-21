@@ -15,6 +15,8 @@ import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 
+
+
 import PersonalisedDashboard from './pages/PersonalisedDashboard';
 
 
@@ -45,6 +47,7 @@ const theme = createTheme({
 
 
 
+
 const App = () => {
   return (
     <AuthProvider>
@@ -57,6 +60,10 @@ const App = () => {
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
+
+                <Route path="/users" element={<UserList />} />
+                <Route path="/products" element={<ProductList />} />
+
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
                 
                 <Route path="/users" element={<UserList />} />
@@ -73,14 +80,16 @@ const App = () => {
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
 
+
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
-                
+
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
 
                 <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
 
@@ -90,13 +99,12 @@ const App = () => {
 
 
 
-
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports" element={<Graphs />} />
               </Routes>
             </div>
-            
+
             <Footer />
           </div>
         </div>

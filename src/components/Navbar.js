@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PersonIcon from "@mui/icons-material/Person";
 
 const Navbar = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+  const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false); // Simulate logout
+    navigate("/"); // Redirect to the homepage
   };
 
   return (
@@ -18,10 +25,19 @@ const Navbar = () => {
         </div>
         {dropdownVisible && (
           <ul className="dropdown-menu">
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            
+            {!isLoggedIn ? (
+              <li>
+                <Link to="/login" onClick={() => setIsLoggedIn(true)}>
+                  Login
+                </Link>
+              </li>
+            ) : (
+              <li>
+                <button onClick={handleLogout} className="logout-button">
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         )}
       </div>

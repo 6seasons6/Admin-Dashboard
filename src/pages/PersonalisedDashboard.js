@@ -4,6 +4,10 @@ import { Box, Typography, Grid, Card, CardContent, CircularProgress } from '@mui
 
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+
+import { useAuth } from '../contexts/AuthContext'; // Context for authentication
+import axios from 'axios'; // For API requests
+
 //import { useAuth } from '../contexts/AuthContext';
 //import { getUserData } from '../services/api';
 
@@ -17,7 +21,8 @@ import '../components/Sidebar';
 Chart.register(...registerables);
 
 const DashboardApp = () => {
-  //const { authData } = useAuth();
+
+  const { authData } = useAuth(); // Assuming authData contains user token
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,19 +31,27 @@ const DashboardApp = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-         //get the data when user login
+        //get the data when user login
         //const mockData = await getUserData(authData.token);
-        // Mock data for demonstration
-        // Mocking the user data
-         const mockData = {
-           name: 'Kamala Kadiyam',
-           monthlyData: 500,  // Monthly data in units
-           dailyData: 20,     // Daily data in hours
-           yearlyData: 1500,  // Yearly data in units
+     
+        // Fetch username from the database/API
+        const response = await axios.get('/api/user', {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+
+        const userName = response.data.name;
+
+        // Mock data for other fields
+        const mockData = {
+          name: userName,
+          monthlyData: 500, // Monthly data in units
+          dailyData: 20,    // Daily data in hours
+          yearlyData: 1500, // Yearly data in units
           monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
-         };
+        };
+
         setUserData(mockData);
-      } catch {
+      } catch (err) {
         setError('Failed to load user data.');
       } finally {
         setLoading(false);
@@ -46,16 +59,7 @@ const DashboardApp = () => {
     };
 
     fetchData();
-  }, []);
-
-    // useEffect(() => {
-  //   // Check if the user is logged in (e.g., by checking the token in localStorage)
-  //   const authToken = localStorage.getItem('googleAuthToken');
-  //   if (!authToken) {
-  //     // If not logged in, redirect to the login page
-  //     navigate('/');
-  //   }
-  // }, [navigate]);
+  }, [authData]);
 
   if (loading) {
     return (
@@ -65,7 +69,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3', // Gray background color
+          background: '#D3D3D3', // Gray background
         }}
       >
         <CircularProgress color="inherit" />
@@ -81,7 +85,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3', // Gray background color
+          background: '#D3D3D3',
         }}
       >
         <Typography variant="h6" color="text.secondary">
@@ -108,7 +112,7 @@ const DashboardApp = () => {
         label: 'Monthly Usage (hrs)',
         data: userData.monthlyUsage,
         backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'], // Light pastel colors
-        barThickness: 25, // Reduced width of bars
+        barThickness: 25,
       },
     ],
   };

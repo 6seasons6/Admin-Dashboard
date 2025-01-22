@@ -26,12 +26,22 @@ const SalesAnalytics = () => {
   };
 
   const barChartData = {
-    labels: ['Product A', 'Product B', 'Product C', 'Product D'],
+    labels: ['Ghee', 'Honey', 'Carrot', 'Red Dal','Crystal Sugar'],
     datasets: [
       {
         label: 'Top Selling Products',
-        data: [5000, 4000, 6000, 3000],
-        backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#FF7043'],
+        data: [5000, 4000, 6000, 3000,1500],
+        backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#FF7043','#FFD432',]
+      },
+    ],
+  };
+  const barChartData1 = {
+    labels: ['AndhraPradesh', 'Telangana', 'karnataka', 'Tamil Nadu'],
+    datasets: [
+      {
+        label: 'South Region',
+        data: [5000, 4000, 6000, 3000,],
+        backgroundColor: ['#FF456', '#FFA726', '#42A5F5', '#FF7043']
       },
     ],
   };
@@ -78,24 +88,26 @@ const SalesAnalytics = () => {
 
         {/* Expense Tracking */}
         <Grid item xs={6}>
-          <Card>
-            <CardContent>
+          <Card sx={{ height: '110%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+            <CardContent sx={{ height: 250 }} >
               <Typography variant="h6" gutterBottom>
                 Expense Tracking
               </Typography>
-              <Pie data={pieChartData} />
+              <Pie data={pieChartData}  />
             </CardContent>
           </Card>
         </Grid>
 
         {/* Revenue by Region or Category (Optional) */}
         <Grid item xs={6}>
-          <Card>
-            <CardContent>
+          <Card sx={{ height: '110%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+            <CardContent sx={{ height: 250 }}>
               <Typography variant="h6" gutterBottom>
-                Revenue by Region/Product Category
+                Revenue by Region
               </Typography>
               {/* You can add more charts here */}
+              <Bar data={barChartData1}>
+              </Bar>
             </CardContent>
           </Card>
         </Grid>

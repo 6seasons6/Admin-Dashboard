@@ -4,22 +4,20 @@ import { Box, Typography, Grid, Card, CardContent, CircularProgress } from '@mui
 
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { useAuth } from '../contexts/AuthContext';
+//import { useAuth } from '../contexts/AuthContext';
 //import { getUserData } from '../services/api';
 
-import { getUserData } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { Doughnut, Bar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-import { useNavigate } from 'react-router-dom';
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import '../components/Sidebar';
 
 
 // Register all necessary components for charts
 Chart.register(...registerables);
 
 const DashboardApp = () => {
-  const { authData } = useAuth();
+  //const { authData } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +31,7 @@ const DashboardApp = () => {
         // Mock data for demonstration
         // Mocking the user data
          const mockData = {
-           name: 'Jayanthi Kilari',
+           name: 'Kamala Kadiyam',
            monthlyData: 500,  // Monthly data in units
            dailyData: 20,     // Daily data in hours
            yearlyData: 1500,  // Yearly data in units
@@ -133,6 +131,7 @@ const DashboardApp = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
+          </Typography>
 
     <Box
       sx={{
@@ -211,6 +210,8 @@ const DashboardApp = () => {
         {/* If you want it below the product management */}
         {/* <SalesAnalytics /> */}
       </Box>
+    </Box>
+    /</Box>
     </Box>
       );
 };

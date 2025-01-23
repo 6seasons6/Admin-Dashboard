@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+
 import { useAuth } from '../contexts/AuthContext'; // Context for authentication
 import axios from 'axios'; // For API requests
 //import { useAuth } from '../contexts/AuthContext';
@@ -26,6 +27,17 @@ import {
   IconButton,
 } from '@mui/material';
 
+import { useAuth } from '../contexts/AuthContext'; // Context for authentication
+import axios from 'axios'; // For API requests
+
+//import { useAuth } from '../contexts/AuthContext';
+//import { getUserData } from '../services/api';
+
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
+import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
+import '../components/Sidebar';
 
 //import { getUserData } from '../services/api';
 //import { useNavigate } from 'react-router-dom';
@@ -75,6 +87,10 @@ const DashboardApp = () => {
         ]);
       
       } catch {
+
+
+        setUserData(mockData);
+      } catch (err) {
         setError('Failed to load user data.');
       } finally {
         setLoading(false);
@@ -160,6 +176,7 @@ const DashboardApp = () => {
   //   }
   // }, [navigate]);
  
+  }, [authData]);
 
   
   if (loading) {
@@ -236,6 +253,7 @@ const DashboardApp = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
+          </Typography>
 
        </Typography>
     <Box
@@ -435,11 +453,19 @@ const DashboardApp = () => {
         {/* If you want a sidebar layout */}
         <Box sx={{ flex: 3, paddingRight: 3 }}>
           <SalesAnalytics />
+          
         </Box>
  
         {/* If you want it below the product management */}
         {/* <SalesAnalytics /> */}
       </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+        <Box sx={{ flex: 3, paddingRight: 3 }}>
+            <CustomerProductAnalytics /> {/* Added CustomerProductAnalytics */}
+          </Box>
+       </Box>
+    </Box>
+    /</Box>
     </Box>
 
     // </Box>

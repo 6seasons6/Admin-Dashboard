@@ -1,9 +1,10 @@
 // src/pages/PersonalisedDashboard.js
 import React, { useEffect, useState } from 'react';
-
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext'; // Context for authentication
+import axios from 'axios'; // For API requests
+//import { useAuth } from '../contexts/AuthContext';
 //import { getUserData } from '../services/api';
 import { getUserData } from '../services/api';
 import { useNavigate } from 'react-router-dom';
@@ -24,11 +25,16 @@ import {
   FormControl,
   IconButton,
 } from '@mui/material';
+
+
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
+//import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import '../components/Sidebar';
 // Register all necessary components for charts
 Chart.register(...registerables);
- 
 const DashboardApp = () => {
-  const { authData } = useAuth();
+  const { authData } = useAuth(); // Assuming authData contains user token
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,24 +48,32 @@ const DashboardApp = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-         //get the data when user login
+        //get the data when user login
         //const mockData = await getUserData(authData.token);
-        // Mock data for demonstration
-        // Mocking the user data
-         const mockData = {
-           name: 'Jayanthi Kilari',
-           monthlyData: 500,  // Monthly data in units
-           dailyData: 20,     // Daily data in hours
-           yearlyData: 1500,  // Yearly data in units
+     
+        // Fetch username from the database/API
+        const response = await axios.get('/api/user', {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+
+        const userName = response.data.name;
+
+        // Mock data for other fields
+        const mockData = {
+          name: userName,
+          monthlyData: 500, // Monthly data in units
+          dailyData: 20,    // Daily data in hours
+          yearlyData: 1500, // Yearly data in units
           monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
-         };
-        setUserData(mockData);
+        };
+       setUserData(mockData);
          // Mock product data
          setProducts([
           { id: 1, name: 'Product A', price: 50, category: 'Category 1', stock: 5 },
           { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
           { id: 3, name: 'Product C', price: 20, category: 'Category 1', stock: 0 },
         ]);
+      
       } catch {
         setError('Failed to load user data.');
       } finally {
@@ -68,6 +82,7 @@ const DashboardApp = () => {
     };
  
     fetchData();
+
   }, []);
   const handleAddProduct = () => {
     setIsModalOpen(true);
@@ -145,6 +160,8 @@ const DashboardApp = () => {
   //   }
   // }, [navigate]);
  
+
+  
   if (loading) {
     return (
       <Box
@@ -153,7 +170,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3', // Gray background color
+          background: '#D3D3D3', // Gray background
         }}
       >
         <CircularProgress color="inherit" />
@@ -169,7 +186,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3', // Gray background color
+          background: '#D3D3D3',
         }}
       >
         <Typography variant="h6" color="text.secondary">
@@ -196,7 +213,7 @@ const DashboardApp = () => {
         label: 'Monthly Usage (hrs)',
         data: userData.monthlyUsage,
         backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'], // Light pastel colors
-        barThickness: 25, // Reduced width of bars
+        barThickness: 25,
       },
     ],
   };
@@ -219,6 +236,7 @@ const DashboardApp = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
+
        </Typography>
     <Box
       sx={{
@@ -423,10 +441,15 @@ const DashboardApp = () => {
         {/* <SalesAnalytics /> */}
       </Box>
     </Box>
+
     // </Box>
     // </Box>
    
    
+
+    // </Box>
+    // </Box>
+
       );
 };
  

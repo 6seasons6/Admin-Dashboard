@@ -14,6 +14,7 @@ import axios from 'axios'; // For API requests
 //import { getUserData } from '../services/api';
 //import { useNavigate } from 'react-router-dom';
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
 import '../components/Sidebar';
 
 
@@ -209,11 +210,17 @@ const DashboardApp = () => {
         {/* If you want a sidebar layout */}
         <Box sx={{ flex: 3, paddingRight: 3 }}>
           <SalesAnalytics />
+          
         </Box>
 
         {/* If you want it below the product management */}
         {/* <SalesAnalytics /> */}
       </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+        <Box sx={{ flex: 3, paddingRight: 3 }}>
+            <CustomerProductAnalytics /> {/* Added CustomerProductAnalytics */}
+          </Box>
+       </Box>
     </Box>
     /</Box>
     </Box>

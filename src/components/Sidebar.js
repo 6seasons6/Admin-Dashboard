@@ -1,5 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
+import { FaHome, FaUsers, FaChartLine } from 'react-icons/fa';
+
+const Sidebar = () => (
+  <div className="sidebar">
+    
+    <ul>
+      <li><Link to="/"><FaHome /> Dashboard</Link></li>
+      <li><Link to="/users"><FaUsers /> Users</Link></li>
+      <li><Link to="/reports"><FaChartLine /> Reports</Link></li>
+
 import { FaHome, FaUsers, FaChartLine, FaProductHunt, FaUserCircle } from 'react-icons/fa';
 
 import { SiGoogleanalytics } from 'react-icons/si';
@@ -18,6 +29,7 @@ const Sidebar = () => (
       <li><Link to="/users"><FaUsers className='icons'/> <span className='d-none d-sm-inline'> Users</span> </Link></li>
       <li><Link to="/reports"><FaChartLine className='icons'/> <span className='d-none d-sm-inline'> Reports</span> </Link></li>
       <li><Link to="/"><IoSettings className='icons'/> <span className='d-none d-sm-inline'> Settings</span> </Link></li>
+
 
     </ul>
     </nav>

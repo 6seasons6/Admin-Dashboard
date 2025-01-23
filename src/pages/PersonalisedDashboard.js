@@ -1,37 +1,57 @@
+// src/pages/PersonalisedDashboard.js
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, CircularProgress} from '@mui/material';
-import { getUserData } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import { Box, Typography, Grid, Card, CardContent, CircularProgress } from '@mui/material';
+
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
-import { useNavigate } from 'react-router-dom';
+
+import { useAuth } from '../contexts/AuthContext'; // Context for authentication
+import axios from 'axios'; // For API requests
+
+//import { useAuth } from '../contexts/AuthContext';
+//import { getUserData } from '../services/api';
+
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
+import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import '../components/Sidebar';
+
 
 // Register all necessary components for charts
 Chart.register(...registerables);
 
 const DashboardApp = () => {
-  const { authData } = useAuth();
+
+  const { authData } = useAuth(); // Assuming authData contains user token
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if the user is logged in (e.g., by checking the token in localStorage)
-    const authToken = localStorage.getItem('googleAuthToken');
-    if (!authToken) {
-      // If not logged in, redirect to the login page
-      navigate('/');
-    }
-  }, [navigate]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getUserData(authData.token);
-        setUserData(data);
-      } catch {
+        //get the data when user login
+        //const mockData = await getUserData(authData.token);
+     
+        // Fetch username from the database/API
+        const response = await axios.get('/api/user', {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+
+        const userName = response.data.name;
+
+        // Mock data for other fields
+        const mockData = {
+          name: userName,
+          monthlyData: 500, // Monthly data in units
+          dailyData: 20,    // Daily data in hours
+          yearlyData: 1500, // Yearly data in units
+          monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
+        };
+
+        setUserData(mockData);
+      } catch (err) {
         setError('Failed to load user data.');
       } finally {
         setLoading(false);
@@ -39,7 +59,7 @@ const DashboardApp = () => {
     };
 
     fetchData();
-  }, [authData.token]);
+  }, [authData]);
 
   if (loading) {
     return (
@@ -49,7 +69,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+          background: '#D3D3D3', // Gray background
         }}
       >
         <CircularProgress color="inherit" />
@@ -65,10 +85,10 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+          background: '#D3D3D3',
         }}
       >
-        <Typography variant="h6" color="white">
+        <Typography variant="h6" color="text.secondary">
           {error}
         </Typography>
       </Box>
@@ -80,7 +100,7 @@ const DashboardApp = () => {
     datasets: [
       {
         data: [userData.monthlyData, userData.dailyData, userData.yearlyData],
-        backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726'],
+        backgroundColor: ['#6FBF73', '#85D6F7', '#FF9F8C'], // Light pastel colors
       },
     ],
   };
@@ -89,76 +109,115 @@ const DashboardApp = () => {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
     datasets: [
       {
-        label: 'Data Usage',
+        label: 'Monthly Usage (hrs)',
         data: userData.monthlyUsage,
-        backgroundColor: '#42A5F5',
+        backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'], // Light pastel colors
+        barThickness: 25,
       },
     ],
   };
 
+  const graphOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          color: '#4A5568', // Dark text color for legend
+        },
+      },
+    },
+  };
+
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: 'linear-gradient(135deg, #6a11cb, #2575fc)' }}>
-      
-      {/* Dashboard Content */}
+
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
+      <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
+        <Typography variant="h4" gutterBottom>
+          </Typography>
+
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',  // Ensure content is stacked vertically
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+      }}
+    >
       <Box sx={{ flex: 1, padding: 3 }}>
         <Typography variant="h4" gutterBottom color="white">
+
           Welcome, {userData.name}
         </Typography>
         <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <Card>
+          {/* Cards for Monthly, Daily, Yearly Data */}
+          {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
+            const data =
+              idx === 0
+                ? `${userData.monthlyData} units`  // Monthly data in units
+                : idx === 1
+                ? `${userData.dailyData} hours`  // Daily data in hours
+                : `${userData.yearlyData} units`; // Yearly data in units
+            return (
+              <Grid item xs={12} sm={4} key={idx}>
+                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom color="#A0AEC0">
+                      {label}
+                    </Typography>
+                    <Typography variant="h4" color="#2D3748">
+                      {data}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            );
+          })}
+
+          {/* Doughnut Chart for Data Distribution */}
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
               <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Monthly Data
-                </Typography>
-                <Typography>{userData.monthlyData}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Daily Data
-                </Typography>
-                <Typography>{userData.dailyData}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={4}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Yearly Data
-                </Typography>
-                <Typography>{userData.yearlyData}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={6}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom color="#A0AEC0">
                   Data Distribution
                 </Typography>
-                <Doughnut data={doughnutData} />
+                <Box sx={{ height: 250 }}>
+                  <Doughnut data={doughnutData} options={graphOptions} />
+                </Box>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={6}>
-            <Card>
+
+          {/* Bar Chart for Monthly Usage */}
+          <Grid item xs={12} sm={6}>
+            <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom color="#A0AEC0">
                   Monthly Usage
                 </Typography>
-                <Bar data={barData} />
+                <Box sx={{ height: 250 }}>
+                  <Bar data={barData} options={graphOptions} />
+                </Box>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
       </Box>
+        {/* Sales Analytics Sidebar or Below Section */}
+      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+        {/* If you want a sidebar layout */}
+        <Box sx={{ flex: 3, paddingRight: 3 }}>
+          <SalesAnalytics />
+        </Box>
+
+        {/* If you want it below the product management */}
+        {/* <SalesAnalytics /> */}
+      </Box>
     </Box>
-  );
+    /</Box>
+    </Box>
+      );
 };
 
 export default DashboardApp;

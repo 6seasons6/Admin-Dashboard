@@ -1,20 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { FaHome, FaUsers, FaChartLine } from 'react-icons/fa';
-
-const Sidebar = () => (
-  <div className="sidebar">
-    
-    <ul>
-      <li><Link to="/"><FaHome /> Dashboard</Link></li>
-      <li><Link to="/users"><FaUsers /> Users</Link></li>
-      <li><Link to="/reports"><FaChartLine /> Reports</Link></li>
 
 import { FaHome, FaUsers, FaChartLine, FaProductHunt, FaUserCircle } from 'react-icons/fa';
 
 import { SiGoogleanalytics } from 'react-icons/si';
 import { IoSettings } from 'react-icons/io5';
+
+
+
 const Sidebar = () => (
   <div className="sidebar">
     <div className="logo1 text-center">

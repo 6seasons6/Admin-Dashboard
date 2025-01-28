@@ -8,8 +8,8 @@ body {
 }
 
 .sidebar {
-  width: 200px;
-  background-color: rgba(172, 213, 223, 0.5);
+  /* width: 200px; */
+  background-color: #f4f1f1;
     height: 100vh;
   padding: 80px 10px;
 }
@@ -24,10 +24,12 @@ body {
 }
 
 .sidebar ul li a {
-  color: #4180c9;
+  color: #0c417a;
   text-decoration: none;
   display: flex;
   align-items: center;
+  font-size: 17px;
+  
 }
 
 .sidebar ul li a:hover {
@@ -139,9 +141,13 @@ body {
 }
 /* sidebar.css */
 .logo1 {
-  margin-top: -6rem;
+  font-size: 70px;
+  color: #0c417a;
+  cursor: pointer;
 }
-.logo1 img {
-  display: block;
-  width: 80%;
+
+.icons{
+  font-size: 25px;
+  margin-right: 5px;
 }
+

@@ -7,8 +7,8 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 const app = express();
-
-
+ 
+ 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -18,8 +18,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-
+ 
+ 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -27,42 +27,42 @@ mongoose.connect(process.env.MONGO_URI, {
 })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
-
+ 
 // User Schema
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
-
+ 
 const User = mongoose.model('User', userSchema); // Fixed naming issue
-
+ 
 // Registration Endpoint
 app.post('/api/auth/register', async (req, res) => {
-  console.log('Request Body:', req.body); 
+  console.log('Request Body:', req.body);
   const { username, email, password } = req.body;
-
+ 
   if (!username || !email || !password) {
     return res.status(400).json({ message: 'All fields are required' });
   }
-
+ 
   try {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-
+ 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
+ 
     // Create a new user
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
     });
-
+ 
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
@@ -70,46 +70,46 @@ app.post('/api/auth/register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+ 
 // Login Endpoint
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-
+ 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
   }
-
+ 
   try {
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
+ 
     // Compare passwords
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    // Simulate a token 
+ 
+    // Simulate a token
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '1h', // Token expiration time
     });
-    
-    res.status(200).json({ 
-       message: 'Login successful', 
-       user: { id: user._id, username: user.username, email: user.email }, 
-      token 
+   
+    res.status(200).json({
+       message: 'Login successful',
+       user: { id: user._id, username: user.username, email: user.email },
+      token
    });
    } catch (error) {
    console.error('Login error:', error);
      res.status(500).json({ message: 'Server error' });
    }
-  
+ 
 });
-
-
+ 
+ 
 // Create a transporter for sending emails
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
@@ -118,20 +118,20 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
+ 
 // Forgot Password API
 app.post('/api/auth/forgot-password', async (req, res) => {
   const { email } = req.body;
-
+ 
   try {
     // Check if user exists
     console.log('Received email:', email);
-
+ 
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-
+ 
     // Generate a token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.RESET_TOKEN_EXPIRY,
@@ -146,7 +146,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
       subject: 'Password Reset',
       html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link will expire in ${process.env.RESET_TOKEN_EXPIRY}.</p>`,
     };
-
+ 
     await transporter.sendMail(mailOptions);
    console.log("mail sent success");
     res.json({ success: true, message: 'Password reset email sent successfully' });
@@ -154,14 +154,14 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     console.error('Forgot password error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
-  
+ 
 });
-
+ 
 app.post('/api/auth/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
   console.log('Received token:', token); // Log the received token
   console.log('Received new password:', newPassword); // Log the new password
-
+ 
   try {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -171,14 +171,14 @@ app.post('/api/auth/reset-password', async (req, res) => {
     if (!user) {
       return res.status(404).json({ success: false, message: 'User  not found' });
     }
-
+ 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-
+ 
     // Update the user's password
     user.password = hashedPassword;
     await user.save();
-
+ 
     res.json({ success: true, message: 'Password reset successful' });
   } catch (error) {
     console.error('Reset password error:', error); // Log the error for debugging
@@ -188,20 +188,20 @@ app.post('/api/auth/reset-password', async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
-
-
+ 
+ 
 app.get('/reset-password', (req, res) => {
   const { token } = req.query;
-
+ 
   if (!token) {
     return res.status(400).send('<h1>Error</h1><p>Token is required.</p>');
   }
-
+ 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(400).send('<h1>Error</h1><p>Invalid or expired token.</p>');
     }
-
+ 
     res.send(`
       <html>
         <head>
@@ -286,11 +286,11 @@ app.get('/reset-password', (req, res) => {
           <script>
             document.getElementById('resetPasswordForm').addEventListener('submit', async (event) => {
               event.preventDefault();
-
+ 
               const token = document.getElementById('token').value;
               const newPassword = document.getElementById('newPassword').value;
               const messageDiv = document.getElementById('message');
-
+ 
               try {
                 const response = await fetch('/api/auth/reset-password', {
                   method: 'POST',
@@ -299,9 +299,9 @@ app.get('/reset-password', (req, res) => {
                   },
                   body: JSON.stringify({ token, newPassword }),
                 });
-
+ 
                 const data = await response.json();
-
+ 
                 if (response.ok) {
                   messageDiv.className = 'message success';
                   messageDiv.textContent = data.message || 'Password reset successful!';
@@ -322,27 +322,27 @@ app.get('/reset-password', (req, res) => {
     `);
   });
 });
-
+ 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Extract token
-
+ 
   if (!token) {
     return res.status(401).json({ message: 'No token provided' }); // Unauthorized if no token
   }
-
+ 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       console.error('Token verification failed:', err);
       return res.status(403).json({ message: 'Invalid or expired token' }); // Forbidden if token invalid
     }
-
+ 
     req.user = user; // Attach user data to the request object
     next(); // Proceed to next middleware or route handler
   });
 };
-
-
+ 
+ 
 // Example Express route for fetching user data
 app.get('/api/user', authenticateToken, async (req, res) => {
   try {
@@ -350,7 +350,7 @@ app.get('/api/user', authenticateToken, async (req, res) => {
     const user = await User.findById(userId);
     console.log('Fetching user for ID:', userId);
 console.log('Database user:', user);
-
+ 
     if (!user) {
       return res.status(404).json({ message: 'User  not found' });
     }
@@ -366,7 +366,12 @@ console.log('Database user:', user);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+ 
+// // Start Server
+// const PORT = process.env.PORT || 5000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+ 
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Backend is running on http://localhost:${PORT}`);
+}); 

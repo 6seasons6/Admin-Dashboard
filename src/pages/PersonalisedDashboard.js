@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+ 
 import { useAuth } from '../contexts/AuthContext'; // Context for authentication
 import axios from 'axios'; // For API requests
 //import { useAuth } from '../contexts/AuthContext';
 //import { getUserData } from '../services/api';
-import { getUserData } from '../services/api';
-import { useNavigate } from 'react-router-dom';
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
 import {
   Box,
@@ -23,10 +24,11 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  IconButton,
+  
 } from '@mui/material';
-
-
+ 
+//import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
+ 
 //import { getUserData } from '../services/api';
 //import { useNavigate } from 'react-router-dom';
 //import SalesAnalytics from '../components/Analytics/SalesAnalytics';
@@ -44,7 +46,8 @@ const DashboardApp = () => {
   // const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for detailed view
   const [search, setSearch] = useState('');  // Search state
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
-  const [filterStock, setFilterStock] = useState('');  // Stock filter 
+  const [filterStock, setFilterStock] = useState('');  // Stock filter
+  const [selectedProducts, setSelectedProducts] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,9 +58,9 @@ const DashboardApp = () => {
         const response = await axios.get('/api/user', {
           headers: { Authorization: `Bearer ${authData.token}` },
         });
-
+ 
         const userName = response.data.name;
-
+ 
         // Mock data for other fields
         const mockData = {
           name: userName,
@@ -66,6 +69,7 @@ const DashboardApp = () => {
           yearlyData: 1500, // Yearly data in units
           monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
         };
+ 
        setUserData(mockData);
          // Mock product data
          setProducts([
@@ -73,7 +77,7 @@ const DashboardApp = () => {
           { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
           { id: 3, name: 'Product C', price: 20, category: 'Category 1', stock: 0 },
         ]);
-      
+     
       } catch {
         setError('Failed to load user data.');
       } finally {
@@ -82,31 +86,35 @@ const DashboardApp = () => {
     };
  
     fetchData();
-
-  }, []);
+  }, );
+  // const handleModalOpen = () => setOpenModal(true);
+  // const handleModalClose = () => setOpenModal(false);  
   const handleAddProduct = () => {
     setIsModalOpen(true);
   };
-
-  const handleCloseModal = () => {
+ 
+  const handleModalClose = () => {
     setIsModalOpen(false);
   };
-
+ 
+  // const handleModalOpen = () => {
+  //   setIsModalOpen(true);
+  // };
   const handleProductChange = (e) => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({ ...prev, [name]: value }));
   };
-
+ 
   const handleSaveProduct = () => {
     setProducts([...products, { ...newProduct, id: products.length + 1 }]);
     setIsModalOpen(false);
     setNewProduct({ name: '', price: '', category: '', stock: '' });  // Clear form
   };
-
+ 
   const handleDeleteProduct = (id) => {
     setProducts(products.filter((product) => product.id !== id));
   };
-
+ 
   const handleEditProduct = (id) => {
     const product = products.find((p) => p.id === id);
     setNewProduct(product);
@@ -114,7 +122,7 @@ const DashboardApp = () => {
   };
   const handleReorderProduct = (id) => {
     // Simulate reordering by increasing the stock of the selected product.
-    setProducts((prevProducts) => 
+    setProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.id === id ? { ...product, stock: product.stock + 10 } : product  // Increase stock by 10
       )
@@ -128,21 +136,16 @@ const DashboardApp = () => {
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
-
+ 
   const handleCategoryFilterChange = (e) => {
     setFilterCategory(e.target.value);
   };
-
+ 
   const handleStockFilterChange = (e) => {
     setFilterStock(e.target.value);
   };
-  // const handleReorderProduct = (id) => {
-  //   setProducts(products.filter((product) => product.id !== id));
-  // };
   
-  // const handleProductClick = (product) => {
-  //   setSelectedProduct(product);
-  
+ 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = filterCategory ? product.category === filterCategory : true;
@@ -150,7 +153,7 @@ const DashboardApp = () => {
       filterStock === '' ? true : filterStock === 'low' ? product.stock <= 5 : product.stock > 5;
     return matchesSearch && matchesCategory && matchesStock;
   });
-
+ 
     // useEffect(() => {
   //   // Check if the user is logged in (e.g., by checking the token in localStorage)
   //   const authToken = localStorage.getItem('googleAuthToken');
@@ -160,8 +163,11 @@ const DashboardApp = () => {
   //   }
   // }, [navigate]);
  
-
-  
+ 
+ 
+ 
+ 
+ 
   if (loading) {
     return (
       <Box
@@ -236,8 +242,9 @@ const DashboardApp = () => {
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
-
-       </Typography>
+          </Typography>
+ 
+       
     <Box
       sx={{
         display: 'flex',
@@ -308,13 +315,13 @@ const DashboardApp = () => {
     {/* Product Catalog Management */}
     <Box sx={{ padding: 3 }}>
     <Typography variant="h5" gutterBottom   sx={{ color: '#FFFFFF' }}>
-       Product Catalog Management   
+       Product Catalog Management  
     </Typography>
     {/* Add New Product Button */}
     <Button variant="contained" color="primary" onClick={handleAddProduct}>
       Add New Product
     </Button>
-
+ 
     {/* Search & Filters */}
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2  , '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
       <TextField
@@ -348,13 +355,14 @@ const DashboardApp = () => {
     <Grid container spacing={3} sx={{ marginTop: 2 }}>
       {filteredProducts.map((product) => (
         <Grid item xs={12} sm={4} key={product.id}>
-          <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+          <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}  
+          onClick={() => setSelectedProducts(product)}>
             <CardContent>
               <Typography variant="h6">{product.name}</Typography>
               <Typography variant="body2">Price: ${product.price}</Typography>
               <Typography variant="body2">Category: {product.category}</Typography>
               <Typography variant="body2">Stock: {product.stock}</Typography>
-
+    
               {/* Edit and Delete Actions */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
                 <Button variant="outlined" onClick={() => handleEditProduct(product.id)}>
@@ -367,7 +375,7 @@ const DashboardApp = () => {
               <Button
                 variant="contained"
                 color="warning"
-                onClick={() => handleReorderProduct(product.id)} > 
+                onClick={() => handleReorderProduct(product.id)} >
                 Reorder
               </Button>
             )}
@@ -378,9 +386,9 @@ const DashboardApp = () => {
        ))}
      </Grid>
    </Box>
-
+ 
   {/* Modal to Add/Edit Product */}
-  <Modal open={isModalOpen} onClose={handleCloseModal}>
+  <Modal open={isModalOpen} onClose={handleModalClose}>
     <Box sx={{ padding: 3, width: 400, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
       <Typography variant="h6">{newProduct.id ? 'Edit Product' : 'Add New Product'}</Typography>
       <TextField
@@ -418,7 +426,7 @@ const DashboardApp = () => {
         sx={{ marginTop: 2 }}
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-        <Button variant="outlined" onClick={handleCloseModal}>
+        <Button variant="outlined" onClick={handleModalClose}>
           Cancel
         </Button>
         <Button variant="contained" color="primary" onClick={handleSaveProduct}>
@@ -427,9 +435,61 @@ const DashboardApp = () => {
       </Box>
     </Box>
   </Modal>
+      </Box>
    
-   
-   
+     {/* Product Details View Modal */}
+{selectedProducts && (
+  <Modal open={!!selectedProducts} onClose={() => setSelectedProducts(null)}>
+    <Box sx={{ padding: 3, width: 600, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
+      <Typography variant="h6">{selectedProducts.name}</Typography>
+      {/* Product Images */}
+      <Box>
+        <Typography variant="subtitle1">Product Images:</Typography>
+        {/* Render images */}
+      </Box>
+      {/* Product Description */}
+      <Box>
+        <Typography variant="subtitle1">Description:</Typography>
+        <Typography variant="body2">{selectedProducts.description}</Typography>
+      </Box>
+      {/* Product Variants */}
+      <Box>
+        <Typography variant="subtitle1">Variants:</Typography>
+        <Typography variant="body2">{selectedProducts.variants}</Typography>
+      </Box>
+      {/* Sales Performance */}
+      <Box>
+        <Typography variant="subtitle1">Sales Performance:</Typography>
+        <SalesAnalytics productId={selectedProducts.id} />
+      </Box>
+      {/* Profitability */}
+      <Box>
+        <Typography variant="subtitle1">Profitability:</Typography>
+        <Typography variant="body2">
+          Margin: {selectedProducts.margin}% | Revenue: ${selectedProducts.revenue}
+        </Typography>
+      </Box>
+      {/* Inventory Levels */}
+      <Box>
+        <Typography variant="subtitle1">Inventory Levels:</Typography>
+        <Typography variant="body2">Stock: {selectedProducts.stock}</Typography>
+      </Box>
+      {/* Pricing and Discount */}
+      <Box>
+        <Typography variant="subtitle1">Pricing & Discounts:</Typography>
+        <Typography variant="body2">Price: ${selectedProducts.price}</Typography>
+        <Button variant="contained" onClick={() => {}}>
+          Update Price
+        </Button>
+      </Box>
+      {/* Sales Channels */}
+      <Box>
+        <Typography variant="subtitle1">Sales Channels:</Typography>
+        <Typography variant="body2">{selectedProducts.salesChannels}</Typography>
+      </Box>
+    </Box>
+  </Modal>
+)}
         {/* Sales Analytics Sidebar or Below Section */}
       <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
         {/* If you want a sidebar layout */}
@@ -441,17 +501,11 @@ const DashboardApp = () => {
         {/* <SalesAnalytics /> */}
       </Box>
     </Box>
-
-    // </Box>
-    // </Box>
+    </Box>
+    
    
-   
-
-    // </Box>
-    // </Box>
-
+ 
       );
 };
  
 export default DashboardApp;
- 

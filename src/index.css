@@ -41,7 +41,7 @@ body {
 }
 
 .navbar {
-  background: #00bcd4;
+  background: #dee3e5;
   color: #fff;
   padding: 10px 20px;
 }
@@ -49,7 +49,7 @@ body {
 .footer {
   text-align: center;
   padding: 23px;
-  background-color: rgb(118, 245, 224);   height: 26px;
+  background-color: rgb(154, 233, 220);   height: 26px;
   color: white;
   }
 
@@ -76,6 +76,7 @@ body {
 .navbar-title {
   font-size: 24px;
   font-weight: bold;
+  color: rgb(56, 56, 206);
 }
 
 .navbar {
@@ -83,7 +84,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  
+  justify-content: space-between;
   color: white;
 }
 
@@ -115,25 +116,21 @@ body {
   right: 20px; /* Align with the icon */
   top: 50px;   /* Position below the icon */
   
-  color: white;
+  color: red;
   list-style: none;
   margin: 0;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 1px;
+  border-radius: 12px;
+  
 }
 
 .dropdown-menu li {
   padding: 8px 12px;
 }
 
-.dropdown-menu li:hover {
-  background-color: #555;
-}
-
 .dropdown-menu a {
   text-decoration: none;
-  color: white;
+  color: red;
 }
 
 .dropdown-menu a:hover {
@@ -144,10 +141,91 @@ body {
   font-size: 70px;
   color: #0c417a;
   cursor: pointer;
+
 }
 
 .icons{
   font-size: 25px;
   margin-right: 5px;
 }
+
+}
+
+.icons{
+  font-size: 25px;
+  margin-right: 5px;
+}
+
+.image{
+  width:160px;
+}
+.links {
+  display: flex;
+  gap: 20px; /* Adjust spacing between links */
+  width: 5rem;
+}
+.nav-link:hover {
+  text-decoration: underline;
+}
+.dashboard-links {
+  display: flex;
+  align-items: center;
+  
+}
+.icon-container{
+  color: black
+}
+.current-datetime {
+  position: absolute; 
+  top: 10px; 
+  right: 20px; 
+  color: rgb(98, 98, 202); 
+  font-size: 14px; 
+  font-weight: bold; 
+  font-family: Arial, sans-serif; 
+}
+
+.navbar {
+  position: relative; 
+  padding: 10px 20px; 
+}
+.navbar .dashboard-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap:6rem;
+  
+}
+
+.navbar .search-bar {
+  margin-left: 10px;
+  flex-grow: 1;
+  max-width: 150px;
+  border:none;
+}
+.notification-button {
+  margin-left: 10px;
+  color:black;
+}
+.search-bar .MuiOutlinedInput-root {
+  border: none !important; 
+}
+.navbar .navbar-links {
+  display: flex;
+  align-items: center;
+ margin-left:8rem;
+  gap: 3rem; 
+}
+
+.navbar .navbar-links .MuiButton-root {
+  text-transform: none; 
+}
+
+.navbar .navbar-links .search-bar {
+  display: flex;
+  align-items: center;
+}
+
+
+
 

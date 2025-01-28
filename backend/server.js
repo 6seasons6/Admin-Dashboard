@@ -367,6 +367,7 @@ console.log('Database user:', user);
   }
 });
  
+ 
 // // Start Server
 // const PORT = process.env.PORT || 5000;
 // app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
@@ -375,3 +376,9 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Backend is running on http://localhost:${PORT}`);
 }); 
+
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+ 
+

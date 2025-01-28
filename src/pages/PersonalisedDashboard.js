@@ -1,15 +1,15 @@
-// src/pages/PersonalisedDashboard.js
 import React, { useEffect, useState } from 'react';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
  
 import { useAuth } from '../contexts/AuthContext'; // Context for authentication
 import axios from 'axios'; // For API requests
-//import { useAuth } from '../contexts/AuthContext';
-//import { getUserData } from '../services/api';
-//import { getUserData } from '../services/api';
-//import { useNavigate } from 'react-router-dom';
+
+
+import { useNavigate } from 'react-router-dom';
+
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
 import {
   Box,
   Typography,
@@ -24,71 +24,95 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+
   
 } from '@mui/material';
  
-//import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
- 
-//import { getUserData } from '../services/api';
-//import { useNavigate } from 'react-router-dom';
-//import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+
+} from '@mui/material';
+
 import '../components/Sidebar';
+
 // Register all necessary components for charts
 Chart.register(...registerables);
+
 const DashboardApp = () => {
   const { authData } = useAuth(); // Assuming authData contains user token
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [products, setProducts] = useState([]);  // Product list state
-  const [isModalOpen, setIsModalOpen] = useState(false);  // Modal visibility
+  const [products, setProducts] = useState([]); // Product list state
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
   const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', stock: '' });
+
   // const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for detailed view
   const [search, setSearch] = useState('');  // Search state
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
   const [filterStock, setFilterStock] = useState('');  // Stock filter
   const [selectedProducts, setSelectedProducts] = useState(null);
+
+  const [search, setSearch] = useState(''); // Search state
+  const [filterCategory, setFilterCategory] = useState(''); // Category filter
+  const [filterStock, setFilterStock] = useState(''); // Stock filter
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        //get the data when user login
-        //const mockData = await getUserData(authData.token);
-     
-        // Fetch username from the database/API
         const response = await axios.get('/api/user', {
           headers: { Authorization: `Bearer ${authData.token}` },
         });
  
         const userName = response.data.name;
+
  
         // Mock data for other fields
+
+
+
         const mockData = {
           name: userName,
           monthlyData: 500, // Monthly data in units
-          dailyData: 20,    // Daily data in hours
+          dailyData: 20, // Daily data in hours
           yearlyData: 1500, // Yearly data in units
           monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
         };
+
  
        setUserData(mockData);
          // Mock product data
          setProducts([
+
+
+        setUserData(mockData);
+
+        setProducts([
+
           { id: 1, name: 'Product A', price: 50, category: 'Category 1', stock: 5 },
           { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
           { id: 3, name: 'Product C', price: 20, category: 'Category 1', stock: 0 },
         ]);
+
      
       } catch {
+
+      } catch (err) {
+
         setError('Failed to load user data.');
       } finally {
         setLoading(false);
       }
     };
- 
+
     fetchData();
+
   }, );
   // const handleModalOpen = () => setOpenModal(true);
   // const handleModalClose = () => setOpenModal(false);  
+
+  }, [authData]);
+
+
   const handleAddProduct = () => {
     setIsModalOpen(true);
   };
@@ -108,7 +132,7 @@ const DashboardApp = () => {
   const handleSaveProduct = () => {
     setProducts([...products, { ...newProduct, id: products.length + 1 }]);
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', category: '', stock: '' });  // Clear form
+    setNewProduct({ name: '', price: '', category: '', stock: '' });
   };
  
   const handleDeleteProduct = (id) => {
@@ -120,19 +144,19 @@ const DashboardApp = () => {
     setNewProduct(product);
     setIsModalOpen(true);
   };
+
   const handleReorderProduct = (id) => {
+
     // Simulate reordering by increasing the stock of the selected product.
+
+
     setProducts((prevProducts) =>
       prevProducts.map((product) =>
-        product.id === id ? { ...product, stock: product.stock + 10 } : product  // Increase stock by 10
+        product.id === id ? { ...product, stock: product.stock + 10 } : product
       )
     );
   };
-  // const handleReorderProduct = (id) => {
-  //   const product = products.find((p) => p.id === id);
-  //   setNewProduct(product);
-  //   setIsModalOpen(true);
-  // };
+
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -144,8 +168,7 @@ const DashboardApp = () => {
   const handleStockFilterChange = (e) => {
     setFilterStock(e.target.value);
   };
-  
- 
+
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = filterCategory ? product.category === filterCategory : true;
@@ -153,6 +176,7 @@ const DashboardApp = () => {
       filterStock === '' ? true : filterStock === 'low' ? product.stock <= 5 : product.stock > 5;
     return matchesSearch && matchesCategory && matchesStock;
   });
+
  
     // useEffect(() => {
   //   // Check if the user is logged in (e.g., by checking the token in localStorage)
@@ -161,13 +185,9 @@ const DashboardApp = () => {
   //     // If not logged in, redirect to the login page
   //     navigate('/');
   //   }
-  // }, [navigate]);
- 
- 
- 
- 
- 
- 
+  // }, [navigate])
+
+
   if (loading) {
     return (
       <Box
@@ -176,14 +196,14 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3', // Gray background
+          background: '#F5F5F5',
         }}
       >
         <CircularProgress color="inherit" />
       </Box>
     );
   }
-   
+
   if (error) {
     return (
       <Box
@@ -192,7 +212,7 @@ const DashboardApp = () => {
           justifyContent: 'center',
           alignItems: 'center',
           minHeight: '100vh',
-          background: '#D3D3D3',
+          background: '#F5F5F5',
         }}
       >
         <Typography variant="h6" color="text.secondary">
@@ -201,29 +221,29 @@ const DashboardApp = () => {
       </Box>
     );
   }
- 
+
   const doughnutData = {
     labels: ['Monthly', 'Daily', 'Yearly'],
     datasets: [
       {
         data: [userData.monthlyData, userData.dailyData, userData.yearlyData],
-        backgroundColor: ['#6FBF73', '#85D6F7', '#FF9F8C'], // Light pastel colors
+        backgroundColor: ['#6FBF73', '#85D6F7', '#FF9F8C'],
       },
     ],
   };
- 
+
   const barData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
     datasets: [
       {
         label: 'Monthly Usage (hrs)',
         data: userData.monthlyUsage,
-        backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'], // Light pastel colors
+        backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'],
         barThickness: 25,
       },
     ],
   };
- 
+
   const graphOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -231,13 +251,14 @@ const DashboardApp = () => {
       legend: {
         position: 'top',
         labels: {
-          color: '#4A5568', // Dark text color for legend
+          color: '#4A5568',
         },
       },
     },
   };
- 
+
   return (
+
  
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
@@ -270,16 +291,73 @@ const DashboardApp = () => {
             return (
               <Grid item xs={12} sm={4} key={idx}>
                 <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
+
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}>
+      <Box sx={{ flex: 1, padding: 3, color: 'white' }}>
+        <Typography variant="h4" gutterBottom></Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg,rgba(245, 234, 236, 0.9), #D3D3D3)',
+          }}
+        >
+          <Box sx={{ flex: 1, padding: 3 }}>
+            <Typography variant="h4" gutterBottom color="black">
+              Welcome, {userData.name}
+            </Typography>
+            <Grid container spacing={3}>
+              {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
+                const data =
+                  idx === 0
+                    ? `${userData.monthlyData} units`
+                    : idx === 1
+                    ? `${userData.dailyData} hours`
+                    : `${userData.yearlyData} units`;
+                return (
+                  <Grid item xs={12} sm={4} key={idx}>
+                    <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom color="#A0AEC0">
+                          {label}
+                        </Typography>
+                        <Typography variant="h4" color="#2D3748">
+                          {data}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+
+              <Grid item xs={12} sm={6}>
+                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+
                   <CardContent>
                     <Typography variant="h6" gutterBottom color="#A0AEC0">
-                      {label}
+                      Data Distribution
                     </Typography>
-                    <Typography variant="h4" color="#2D3748">
-                      {data}
-                    </Typography>
+                    <Box sx={{ height: 250 }}>
+                      <Doughnut data={doughnutData} options={graphOptions} />
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom color="#A0AEC0">
+                      Monthly Usage
+                    </Typography>
+                    <Box sx={{ height: 250 }}>
+                      <Bar data={barData} options={graphOptions} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
             );
           })}
  
@@ -318,6 +396,16 @@ const DashboardApp = () => {
        Product Catalog Management  
     </Typography>
     {/* Add New Product Button */}
+
+            </Grid>
+          </Box>
+
+          <Box sx={{ padding: 3 }}>
+            <Typography variant="h5" gutterBottom sx={{ color:"black" }}>
+              Product Catalog Management
+            </Typography>
+            {/* Add New Product Button */}
+
     <Button variant="contained" color="primary" onClick={handleAddProduct}>
       Add New Product
     </Button>
@@ -331,11 +419,11 @@ const DashboardApp = () => {
         fullWidth
         sx={{ marginRight: 2 }}
         InputLabelProps={{
-          style: { color: '#FFFFFF' }  // Set label color to white
+          style: { color: 'black' }  // Set label color to white
         }}
       />
       <FormControl sx={{ minWidth: 150,   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
-        <InputLabel sx={{ color: '#FFFFFF' }}>Category </InputLabel>
+        <InputLabel sx={{ color: 'black' }}>Category </InputLabel>
         <Select value={filterCategory} onChange={handleCategoryFilterChange}>
           <MenuItem value="">All Categories</MenuItem>
           <MenuItem value="Category 1">Category 1</MenuItem>
@@ -343,7 +431,7 @@ const DashboardApp = () => {
         </Select>
       </FormControl>
       <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
-        <InputLabel  sx={{ color: '#FFFFFF' }}>Stock Status </InputLabel>
+        <InputLabel  sx={{ color: 'black' }}>Stock Status </InputLabel>
         <Select value={filterStock} onChange={handleStockFilterChange}>
           <MenuItem value="">All Stock</MenuItem>
           <MenuItem value="low">Low Stock</MenuItem>
@@ -495,11 +583,19 @@ const DashboardApp = () => {
         {/* If you want a sidebar layout */}
         <Box sx={{ flex: 3, paddingRight: 3 }}>
           <SalesAnalytics />
+          
         </Box>
  
         {/* If you want it below the product management */}
         {/* <SalesAnalytics /> */}
       </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+        <Box sx={{ flex: 3, paddingRight: 3 }}>
+            <CustomerProductAnalytics /> {/* Added CustomerProductAnalytics */}
+          </Box>
+       </Box>
+    </Box>
+    /</Box>
     </Box>
     </Box>
     
@@ -508,4 +604,7 @@ const DashboardApp = () => {
       );
 };
  
+
 export default DashboardApp;
+
+

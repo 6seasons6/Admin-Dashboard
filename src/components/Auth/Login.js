@@ -3,10 +3,9 @@ import { TextField, Button, Box, Card, CardContent, Typography, Link } from '@mu
 import { login } from '../../services/api'; // Replace with your API call
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-
-
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
+import loginpic from '../../images/loginpic.jpg';
 
 
 const Login = () => {
@@ -35,13 +34,8 @@ const Login = () => {
 
   };
   const handleLoginSuccess = (response) => {
-    // Handle login success here
     console.log(response);
-
-    // You can optionally save the token in local storage, or manage authentication state
-    localStorage.setItem('googleAuthToken', response.credential);
-
-    // Redirect to the dashboard page
+localStorage.setItem('googleAuthToken', response.credential);
     navigate('/dashboard');
   };
 
@@ -57,6 +51,8 @@ const Login = () => {
         alignItems: 'center',
         minHeight: '100vh',
         backgroundColor: '#282c34',
+        backgroundImage: `url(${loginpic})`,
+        
       }}
     >
       <Card sx={{ width: 400, padding: 3, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)' }}>

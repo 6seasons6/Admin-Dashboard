@@ -14,20 +14,16 @@ import SalesReport from './components/Analytics/SalesReport';
 import UserActivity from './components/Analytics/UserActivity';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-
-
-
 import PersonalisedDashboard from './pages/PersonalisedDashboard';
-
-
 import ProductTable from './components/ProductManagement/ProductTable';
-
 import ProductForm from './components/ProductManagement/ProductForm';
 import ForgotPassword from './components/Auth/ForgotPassword';
 //import ResetPassword from './components/Auth/ResetPassword';
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+import SettignPage from './pages/Settingpage';
+import SupportPage from './pages/Supportpage';
 
 
 const theme = createTheme({
@@ -102,6 +98,9 @@ const App = () => {
                 {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports" element={<Graphs />} />
+                <Route path="/settingpage" element={<SettignPage />} />
+                <Route path="/supportpage" element={<SupportPage />} />
+
               </Routes>
             </div>
 

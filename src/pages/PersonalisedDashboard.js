@@ -37,26 +37,66 @@ const DashboardApp = () => {
   const [search, setSearch] = useState(''); // Search state
   const [filterCategory, setFilterCategory] = useState(''); // Category filter
   const [filterStock, setFilterStock] = useState(''); // Stock filter
+  const [usageData, setUsageData] = useState({ daily: 0, monthly: 0, yearly: 0 }); // Usage data
+  const [screenTime, setScreenTime] = useState(0); // Track screen time
+  const [startTime, setStartTime] = useState(null); // Track session start time
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch user data
         const response = await axios.get('/api/user', {
           headers: { Authorization: `Bearer ${authData.token}` },
         });
 
         const userName = response.data.name;
 
-        const mockData = {
-          name: userName,
-          monthlyData: 500, // Monthly data in units
-          dailyData: 20, // Daily data in hours
-          yearlyData: 1500, // Yearly data in units
-          monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
+        setUserData({ name: userName });
+
+        // Track screen time
+        const start = Date.now();
+        setStartTime(start);
+
+        // Handle screen time tracking on page unload
+        const userId = authData?.user?.id || authData?.user?._id;
+        window.onbeforeunload = () => {
+          const end = Date.now();
+          const timeSpent = (end - start) / 1000/60/60; // Convert ms to hours
+          if (timeSpent > 0) {
+            axios.post(
+              'http://localhost:5000/api/track-usage',
+              {
+                userId,
+                sessionDuration: timeSpent,
+              },
+              {
+                headers: { Authorization: `Bearer ${authData.token}` },
+              }
+            );
+          }
         };
 
-        setUserData(mockData);
+        // Fetch usage data
+        const fetchUsageData = async () => {
+          const userId = authData?.user?.id || authData?.user?._id;
+          if (!userId) {
+            console.error('User ID is missing or undefined');
+            return;
+          }
+          try {
+            const response = await axios.get(`http://localhost:5000/api/usage?userId=${userId}`, {
+              headers: { Authorization: `Bearer ${authData.token}` },
+            });
+            const { daily, monthly, yearly } = response.data;
+            setUsageData({ daily, monthly, yearly });
+          } catch (error) {
+            console.error('Failed to load usage data', error);
+          }
+        };
 
+        fetchUsageData();
+
+        // Fetch products (mocked for now)
         setProducts([
           { id: 1, name: 'Product A', price: 50, category: 'Category 1', stock: 5 },
           { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
@@ -70,6 +110,11 @@ const DashboardApp = () => {
     };
 
     fetchData();
+
+    // Cleanup the event listener
+    return () => {
+      window.onbeforeunload = null;
+    };
   }, [authData]);
 
   const handleAddProduct = () => {
@@ -167,7 +212,7 @@ const DashboardApp = () => {
     labels: ['Monthly', 'Daily', 'Yearly'],
     datasets: [
       {
-        data: [userData.monthlyData, userData.dailyData, userData.yearlyData],
+        data: [usageData.monthly, usageData.daily, usageData.yearly],
         backgroundColor: ['#6FBF73', '#85D6F7', '#FF9F8C'],
       },
     ],
@@ -178,7 +223,7 @@ const DashboardApp = () => {
     datasets: [
       {
         label: 'Monthly Usage (hrs)',
-        data: userData.monthlyUsage,
+        data: [usageData.monthly, usageData.monthly, usageData.monthly, usageData.monthly, usageData.monthly], // Replace with actual monthly data
         backgroundColor: ['#D4F1F4', '#FFB6B9', '#D5E1E1', '#B8E0D2', '#F4E1D2'],
         barThickness: 25,
       },
@@ -218,10 +263,10 @@ const DashboardApp = () => {
               {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
                 const data =
                   idx === 0
-                    ? `${userData.monthlyData} units`
+                    ? `${usageData.monthly} hours`
                     : idx === 1
-                    ? `${userData.dailyData} hours`
-                    : `${userData.yearlyData} units`;
+                    ? `${usageData.daily} hours`
+                    : `${usageData.yearly} hours`;
                 return (
                   <Grid item xs={12} sm={4} key={idx}>
                     <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
@@ -267,158 +312,150 @@ const DashboardApp = () => {
           </Box>
 
           <Box sx={{ padding: 3 }}>
-            <Typography variant="h5" gutterBottom sx={{ color:"black" }}>
+            <Typography variant="h5" gutterBottom sx={{ color: 'black' }}>
               Product Catalog Management
             </Typography>
             {/* Add New Product Button */}
-    <Button variant="contained" color="primary" onClick={handleAddProduct}>
-      Add New Product
-    </Button>
+            <Button variant="contained" color="primary" onClick={handleAddProduct}>
+              Add New Product
+            </Button>
 
-    {/* Search & Filters */}
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2  , '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
-      <TextField
-        label="Search Products"
-        value={search}
-        onChange={handleSearchChange}
-        fullWidth
-        sx={{ marginRight: 2 }}
-        InputLabelProps={{
-          style: { color: 'black' }  // Set label color to white
-        }}
-      />
-      <FormControl sx={{ minWidth: 150,   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
-        <InputLabel sx={{ color: 'black' }}>Category </InputLabel>
-        <Select value={filterCategory} onChange={handleCategoryFilterChange}>
-          <MenuItem value="">All Categories</MenuItem>
-          <MenuItem value="Category 1">Category 1</MenuItem>
-          <MenuItem value="Category 2">Category 2</MenuItem>
-        </Select>
-      </FormControl>
-      <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
-        <InputLabel  sx={{ color: 'black' }}>Stock Status </InputLabel>
-        <Select value={filterStock} onChange={handleStockFilterChange}>
-          <MenuItem value="">All Stock</MenuItem>
-          <MenuItem value="low">Low Stock</MenuItem>
-          <MenuItem value="high">High Stock</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
-    {/* Product List */}
-    <Grid container spacing={3} sx={{ marginTop: 2 }}>
-      {filteredProducts.map((product) => (
-        <Grid item xs={12} sm={4} key={product.id}>
-          <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6">{product.name}</Typography>
-              <Typography variant="body2">Price: ${product.price}</Typography>
-              <Typography variant="body2">Category: {product.category}</Typography>
-              <Typography variant="body2">Stock: {product.stock}</Typography>
+            {/* Search & Filters */}
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginTop: 2,
+                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' },
+              }}
+            >
+              <TextField
+                label="Search Products"
+                value={search}
+                onChange={handleSearchChange}
+                fullWidth
+                sx={{ marginRight: 2 }}
+                InputLabelProps={{
+                  style: { color: 'black' }, // Set label color to white
+                }}
+              />
+              <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
+                <InputLabel sx={{ color: 'black' }}>Category </InputLabel>
+                <Select value={filterCategory} onChange={handleCategoryFilterChange}>
+                  <MenuItem value="">All Categories</MenuItem>
+                  <MenuItem value="Category 1">Category 1</MenuItem>
+                  <MenuItem value="Category 2">Category 2</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
+                <InputLabel sx={{ color: 'black' }}>Stock Status </InputLabel>
+                <Select value={filterStock} onChange={handleStockFilterChange}>
+                  <MenuItem value="">All Stock</MenuItem>
+                  <MenuItem value="low">Low Stock</MenuItem>
+                  <MenuItem value="high">High Stock</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+            {/* Product List */}
+            <Grid container spacing={3} sx={{ marginTop: 2 }}>
+              {filteredProducts.map((product) => (
+                <Grid item xs={12} sm={4} key={product.id}>
+                  <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+                    <CardContent>
+                      <Typography variant="h6">{product.name}</Typography>
+                      <Typography variant="body2">Price: ${product.price}</Typography>
+                      <Typography variant="body2">Category: {product.category}</Typography>
+                      <Typography variant="body2">Stock: {product.stock}</Typography>
 
-              {/* Edit and Delete Actions */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                <Button variant="outlined" onClick={() => handleEditProduct(product.id)}>
-                  Edit
-                </Button>
-                <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product.id)}>
-                  Delete
-                </Button>
-            {product.stock <= 5 && (
-              <Button
-                variant="contained"
-                color="warning"
-                onClick={() => handleReorderProduct(product.id)} > 
-                Reorder
-              </Button>
-            )}
-             </Box>
-             </CardContent>
-           </Card>
-         </Grid>
-       ))}
-     </Grid>
-   </Box>
-
-  {/* Modal to Add/Edit Product */}
-  <Modal open={isModalOpen} onClose={handleCloseModal}>
-    <Box sx={{ padding: 3, width: 400, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
-      <Typography variant="h6">{newProduct.id ? 'Edit Product' : 'Add New Product'}</Typography>
-      <TextField
-        label="Product Name"
-        fullWidth
-        name="name"
-        value={newProduct.name}
-        onChange={handleProductChange}
-        sx={{ marginTop: 2 }}
-      />
-      <TextField
-        label="Price"
-        fullWidth
-        name="price"
-        type="number"
-        value={newProduct.price}
-        onChange={handleProductChange}
-        sx={{ marginTop: 2 }}
-      />
-      <TextField
-        label="Category"
-        fullWidth
-        name="category"
-        value={newProduct.category}
-        onChange={handleProductChange}
-        sx={{ marginTop: 2 }}
-      />
-      <TextField
-        label="Stock"
-        fullWidth
-        name="stock"
-        type="number"
-        value={newProduct.stock}
-        onChange={handleProductChange}
-        sx={{ marginTop: 2 }}
-      />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-        <Button variant="outlined" onClick={handleCloseModal}>
-          Cancel
-        </Button>
-        <Button variant="contained" color="primary" onClick={handleSaveProduct}>
-          Save
-        </Button>
-      </Box>
-    </Box>
-  </Modal>
-   
-   
-   
-        {/* Sales Analytics Sidebar or Below Section */}
-      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
-        {/* If you want a sidebar layout */}
-        <Box sx={{ flex: 3, paddingRight: 3 }}>
-          <SalesAnalytics />
-          
-        </Box>
- 
-        {/* If you want it below the product management */}
-        {/* <SalesAnalytics /> */}
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
-        <Box sx={{ flex: 3, paddingRight: 3 }}>
-            <CustomerProductAnalytics /> {/* Added CustomerProductAnalytics */}
+                      {/* Edit and Delete Actions */}
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                        <Button variant="outlined" onClick={() => handleEditProduct(product.id)}>
+                          Edit
+                        </Button>
+                        <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product.id)}>
+                          Delete
+                        </Button>
+                        {product.stock <= 5 && (
+                          <Button variant="contained" color="warning" onClick={() => handleReorderProduct(product.id)}>
+                            Reorder
+                          </Button>
+                        )}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
           </Box>
-       </Box>
+
+          {/* Modal to Add/Edit Product */}
+          <Modal open={isModalOpen} onClose={handleCloseModal}>
+            <Box sx={{ padding: 3, width: 400, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
+              <Typography variant="h6">{newProduct.id ? 'Edit Product' : 'Add New Product'}</Typography>
+              <TextField
+                label="Product Name"
+                fullWidth
+                name="name"
+                value={newProduct.name}
+                onChange={handleProductChange}
+                sx={{ marginTop: 2 }}
+              />
+              <TextField
+                label="Price"
+                fullWidth
+                name="price"
+                type="number"
+                value={newProduct.price}
+                onChange={handleProductChange}
+                sx={{ marginTop: 2 }}
+              />
+              <TextField
+                label="Category"
+                fullWidth
+                name="category"
+                value={newProduct.category}
+                onChange={handleProductChange}
+                sx={{ marginTop: 2 }}
+              />
+              <TextField
+                label="Stock"
+                fullWidth
+                name="stock"
+                type="number"
+                value={newProduct.stock}
+                onChange={handleProductChange}
+                sx={{ marginTop: 2 }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                <Button variant="outlined" onClick={handleCloseModal}>
+                  Cancel
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleSaveProduct}>
+                  Save
+                </Button>
+              </Box>
+            </Box>
+          </Modal>
+
+          {/* Sales Analytics Sidebar or Below Section */}
+          <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+            {/* If you want a sidebar layout */}
+            <Box sx={{ flex: 3, paddingRight: 3 }}>
+              <SalesAnalytics />
+            </Box>
+
+            {/* If you want it below the product management */}
+            {/* <SalesAnalytics /> */}
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
+            <Box sx={{ flex: 3, paddingRight: 3 }}>
+              <CustomerProductAnalytics /> {/* Added CustomerProductAnalytics */}
+            </Box>
+          </Box>
+        </Box>
+      </Box>
     </Box>
-    /</Box>
-    </Box>
-
-    // </Box>
-    // </Box>
-   
-   
-
-    // </Box>
-    // </Box>
-
-      );
+  );
 };
- 
+
 export default DashboardApp;

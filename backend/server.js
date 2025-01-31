@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+
+
 require('dotenv').config();
 const app = express();
  
@@ -18,7 +20,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
- 
+
  
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -367,18 +369,256 @@ console.log('Database user:', user);
   }
 });
  
- 
-// // Start Server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
- 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Backend is running on http://localhost:${PORT}`);
-}); 
+// app.get('/api/usage', async (req, res) => {
+//   console.log("Received userId:", req.query.userId);
+//   const userId = req.query.userId;
+//   if (!userId) {
+//     return res.status(400).json({ message: 'User ID is required' });
+//   }
+
+//   try {
+//     const objId = new mongoose.Types.ObjectId(userId);
+//     // Fetch usage data from the database using the user ID
+//     const usageData = await Usage.findOne({ userId: objId});
+//     console.log("Usage data found:", usageData)
+//  // Assuming a 'Usage' model exists
+//     if (!usageData) {
+//       return res.status(404).json({ message: 'No usage data found for this user' });
+//     }
+
+//     res.status(200).json({
+//       daily: usageData.daily,
+//       monthly: usageData.monthly,
+//       yearly: usageData.yearly,
+//     });
+//   } catch (error) {
+//     console.error('Error fetching usage data:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// Dummy activity tracker (replace with actual logic)
+// let activityLog = {
+//   daily: 0,  // Number of hours or usage within the day
+//   monthly: 0,  // Number of hours or usage within the month
+//   yearly: 0  // Number of hours or usage within the year
+// };
+
+// app.get('/api/usage', async (req, res) => {
+//   const { userId } = req.query;
+
+//   if (!userId) {
+//     return res.status(400).json({ message: 'User ID is required' });
+//   }
+
+//   console.log("Received userId:", userId);
+
+//   try {
+//     const objId = new mongoose.Types.ObjectId(userId);
+//     let usageData = await Usage.findOne({ userId: objId });
+
+//     if (!usageData) {
+//       // No usage data found, create a new one
+//       const dailyUsage = calculateDailyUsage();
+//       const monthlyUsage = calculateMonthlyUsage();
+//       const yearlyUsage = calculateYearlyUsage();
+
+//       // Create new usage data
+//       const newUsageData = new Usage({
+//         userId: objId,
+//         daily: dailyUsage,
+//         monthly: monthlyUsage,
+//         yearly: yearlyUsage,
+//       });
+
+//       await newUsageData.save();
+//       console.log("New usage data created for user:", userId);
+//       return res.status(200).json({
+//         daily: dailyUsage,
+//         monthly: monthlyUsage,
+//         yearly: yearlyUsage,
+//       });
+//     } else {
+//       // Usage data exists, return it
+//       console.log("Usage data found for user:", userId);
+//       return res.status(200).json({
+//         daily: usageData.daily,
+//         monthly: usageData.monthly,
+//         yearly: usageData.yearly,
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error fetching usage data:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// });
+
+// // Function to calculate daily usage
+// function calculateDailyUsage() {
+//   // In a real scenario, you'd calculate actual usage (e.g., based on recent user activity)
+//   return activityLog.daily; // Replace this with actual activity count (e.g., API calls today)
+// }
+
+// // Function to calculate monthly usage
+// function calculateMonthlyUsage() {
+//   // Logic to calculate monthly usage (e.g., sum of daily usage for the month)
+//   return activityLog.monthly; // Replace this with total usage in the current month
+// }
+
+// // Function to calculate yearly usage
+// function calculateYearlyUsage() {
+//   // Logic to calculate yearly usage (e.g., sum of monthly usage for the year)
+//   return activityLog.yearly; // Replace this with total usage for the current year
+// }
+
+// // Example to simulate adding usage data (you'd need to integrate with your system's tracking)
+// app.post('/api/track-usage', (req, res) => {
+//   const { userId, usageType, usageTime } = req.body;  // usageTime is the time spent in hours
+
+//   // Increment appropriate usage data based on the type (daily, monthly, yearly)
+//   if (usageType === 'daily') {
+//     activityLog.daily += usageTime;  // Add the usage time for the current day
+//   } else if (usageType === 'monthly') {
+//     activityLog.monthly += usageTime;  // Add to monthly usage
+//   } else if (usageType === 'yearly') {
+//     activityLog.yearly += usageTime;  // Add to yearly usage
+//   }
+
+//   // Update usage data in the database for the user
+//   Usage.findOneAndUpdate(
+//     { userId: new mongoose.Types.ObjectId(userId) },
+//     {
+//       $inc: {
+//         daily: usageTime,  // Increment daily usage
+//         monthly: usageTime,  // Increment monthly usage
+//         yearly: usageTime  // Increment yearly usage
+//       }
+//     },
+//     { new: true, upsert: true },  // Upsert if the user data doesn't exist
+//     (err, doc) => {
+//       if (err) {
+//         console.error('Error updating usage data:', err);
+//         return res.status(500).json({ message: 'Error updating usage data' });
+//       }
+//       res.status(200).json(doc);  // Respond with the updated document
+//     }
+//   );
+// });
+
+// // A function to reset daily usage every midnight
+// function resetDailyUsage() {
+//   const currentDate = new Date();
+//   const currentDay = currentDate.getDate();
+
+//   if (currentDay !== activityLog.dailyDay) {
+//     // At the start of a new day, reset the daily usage and update monthly/yearly usage
+//     activityLog.monthly += activityLog.daily;
+//     activityLog.yearly += activityLog.daily;
+//     activityLog.daily = 0;
+//     activityLog.dailyDay = currentDay; // Update the stored day to the current day
+//   }
+// }
+
+// // Call this function at midnight or through a scheduler like cron to reset daily usage
+// setInterval(resetDailyUsage, 24 * 60 * 60 * 1000);
+
+async function trackUsage(userId, sessionDuration) {
+  try {
+    const sessionDurationInHours = sessionDuration / 60; // Convert minutes to hours
+
+    console.log("Tracking usage for user:", userId, "Session Duration:", sessionDuration);
+
+    let usageData = await Usage.findOne({ userId });
+
+    const now = new Date();
+    const today = now.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
+    const firstDayOfYear = new Date(now.getFullYear(), 0, 1).toISOString().split("T")[0];
+
+    if (!usageData) {
+      // If no usage data exists for the user, create a new record
+      usageData = new Usage({
+        userId,
+        daily: sessionDurationInHours,
+        monthly: sessionDurationInHours,
+        yearly: sessionDurationInHours,
+        lastUpdated: now,
+      });
+
+      await usageData.save();
+      console.log("New usage data created for user:", userId);
+    } else {
+      // Check if date has changed and reset daily, monthly, and yearly usage accordingly
+      const lastUpdatedDate = usageData.lastUpdated.toISOString().split("T")[0];
+
+      const isNewDay = lastUpdatedDate !== today;
+      const isNewMonth = lastUpdatedDate < firstDayOfMonth;
+      const isNewYear = lastUpdatedDate < firstDayOfYear;
+
+      const updatedDaily = isNewDay ? sessionDurationInHours : usageData.daily + sessionDurationInHours;
+      const updatedMonthly = isNewMonth ? sessionDurationInHours : usageData.monthly + sessionDurationInHours;
+      const updatedYearly = isNewYear ? sessionDurationInHours : usageData.yearly + sessionDurationInHours;
+
+      await Usage.findOneAndUpdate(
+        { userId },
+        {
+          $set: {
+            daily: updatedDaily,
+            monthly: updatedMonthly,
+            yearly: updatedYearly,
+            lastUpdated: now,
+          },
+        },
+        { new: true }
+      );
+
+      console.log("Usage data updated for user:", userId);
+    }
+  } catch (error) {
+    console.error("Error tracking usage:", error);
+  }
+}
+
+// ✅ Endpoint to track usage
+app.post("/api/track-usage", async (req, res) => {
+  const { userId, sessionDuration } = req.body;
+
+  if (!userId || !sessionDuration || sessionDuration <= 0) {
+    return res.status(400).json({ message: "Invalid user ID or session duration" });
+  }
+
+  await trackUsage(userId, sessionDuration);
+  res.status(200).json({ message: "Usage data updated successfully" });
+});
+
+// ✅ Endpoint to get usage data for a user
+app.get("/api/usage", async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const usageData = await Usage.findOne({ userId });
+
+    if (!usageData) {
+      return res.status(404).json({ message: "No usage data found for this user" });
+    }
+
+    res.status(200).json({
+      daily: usageData.daily.toFixed(5),
+      monthly: usageData.monthly.toFixed(5),
+      yearly: usageData.yearly.toFixed(5),
+    });
+  } catch (error) {
+    console.error("Error fetching usage data:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
  
-

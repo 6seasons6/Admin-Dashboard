@@ -4,11 +4,7 @@ import { Chart, registerables } from 'chart.js';
  
 import { useAuth } from '../contexts/AuthContext'; // Context for authentication
 import axios from 'axios'; // For API requests
-
-
-import { useNavigate } from 'react-router-dom';
-
-import SalesAnalytics from '../components/Analytics/SalesAnalytics';
+//import SalesAnalytics from '../components/Analytics/SalesAnalytics';
 import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
 import {
   Box,
@@ -24,14 +20,16 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-
   
 } from '@mui/material';
  
-
-} from '@mui/material';
-
+//import CustomerProductAnalytics from '../components/Analytics/CustomerProductAnalytics';
+ 
+//import { getUserData } from '../services/api';
+//import { useNavigate } from 'react-router-dom';
+import SalesAnalytics from '../components/Analytics/SalesAnalytics';
 import '../components/Sidebar';
+import { Description } from '@mui/icons-material';
 
 // Register all necessary components for charts
 Chart.register(...registerables);
@@ -44,18 +42,11 @@ const DashboardApp = () => {
   const [products, setProducts] = useState([]); // Product list state
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
   const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', stock: '' });
-
   // const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for detailed view
   const [search, setSearch] = useState('');  // Search state
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
   const [filterStock, setFilterStock] = useState('');  // Stock filter
   const [selectedProducts, setSelectedProducts] = useState(null);
-
-  const [search, setSearch] = useState(''); // Search state
-  const [filterCategory, setFilterCategory] = useState(''); // Category filter
-  const [filterStock, setFilterStock] = useState(''); // Stock filter
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,12 +55,8 @@ const DashboardApp = () => {
         });
  
         const userName = response.data.name;
-
  
         // Mock data for other fields
-
-
-
         const mockData = {
           name: userName,
           monthlyData: 500, // Monthly data in units
@@ -77,27 +64,32 @@ const DashboardApp = () => {
           yearlyData: 1500, // Yearly data in units
           monthlyUsage: [300, 500, 200, 400, 700], // Monthly usage in hours
         };
-
  
        setUserData(mockData);
          // Mock product data
          setProducts([
+          { id: 1, 
+            name: 'Product A',
+           description: 'This is a mock description for Product A.',
+           price: 50, 
+            category: 'Category 1',
+            stock: '5' },
 
-
-        setUserData(mockData);
-
-        setProducts([
-
-          { id: 1, name: 'Product A', price: 50, category: 'Category 1', stock: 5 },
-          { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
-          { id: 3, name: 'Product C', price: 20, category: 'Category 1', stock: 0 },
+          { id: 2,
+             name: 'Product B', 
+            description: 'This is a mock description for Product B. ',
+             price: 30, 
+             category: 'Category 2',
+              stock: '1' },
+          { id: 3, 
+            name: 'Product C',
+             description: 'This is a mock description for Product C. ',
+              price: 20,
+               category: 'Category 1',
+                stock: '0' },
         ]);
-
      
       } catch {
-
-      } catch (err) {
-
         setError('Failed to load user data.');
       } finally {
         setLoading(false);
@@ -105,14 +97,9 @@ const DashboardApp = () => {
     };
 
     fetchData();
-
   }, );
   // const handleModalOpen = () => setOpenModal(true);
   // const handleModalClose = () => setOpenModal(false);  
-
-  }, [authData]);
-
-
   const handleAddProduct = () => {
     setIsModalOpen(true);
   };
@@ -130,10 +117,12 @@ const DashboardApp = () => {
   };
  
   const handleSaveProduct = () => {
-    setProducts([...products, { ...newProduct, id: products.length + 1 }]);
+    setProducts([...products, { ...newProduct, id: products.length + 1 , description: newProduct.description || 'No description available',}]);
     setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', category: '', stock: '' });
+    setNewProduct({ name: '', price: '', category: '', stock: '', description: '' });
   };
+  
+  
  
   const handleDeleteProduct = (id) => {
     setProducts(products.filter((product) => product.id !== id));
@@ -145,18 +134,20 @@ const DashboardApp = () => {
     setIsModalOpen(true);
   };
 
-  const handleReorderProduct = (id) => {
-
+  //const handleReorderProduct = (id) => {
     // Simulate reordering by increasing the stock of the selected product.
-
-
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id ? { ...product, stock: product.stock + 10 } : product
-      )
-    );
-  };
-
+  //   setProducts((prevProducts) =>
+  //     prevProducts.map((product) =>
+  //       product.id === id ? { ...product, stock: product.stock + 10 } : product
+  //     )
+  //   );
+  // };
+  const handleReorderProduct = (id) => {
+     const product = products.find((p) => p.id === id);
+     setNewProduct(product);
+      setIsModalOpen(true);
+     };
+  
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
   };
@@ -168,7 +159,8 @@ const DashboardApp = () => {
   const handleStockFilterChange = (e) => {
     setFilterStock(e.target.value);
   };
-
+  
+ 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = filterCategory ? product.category === filterCategory : true;
@@ -176,7 +168,6 @@ const DashboardApp = () => {
       filterStock === '' ? true : filterStock === 'low' ? product.stock <= 5 : product.stock > 5;
     return matchesSearch && matchesCategory && matchesStock;
   });
-
  
     // useEffect(() => {
   //   // Check if the user is logged in (e.g., by checking the token in localStorage)
@@ -185,9 +176,8 @@ const DashboardApp = () => {
   //     // If not logged in, redirect to the login page
   //     navigate('/');
   //   }
-  // }, [navigate])
-
-
+  // }, [navigate]);
+ 
   if (loading) {
     return (
       <Box
@@ -258,7 +248,6 @@ const DashboardApp = () => {
   };
 
   return (
-
  
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
@@ -291,73 +280,16 @@ const DashboardApp = () => {
             return (
               <Grid item xs={12} sm={4} key={idx}>
                 <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
-
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}>
-      <Box sx={{ flex: 1, padding: 3, color: 'white' }}>
-        <Typography variant="h4" gutterBottom></Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg,rgba(245, 234, 236, 0.9), #D3D3D3)',
-          }}
-        >
-          <Box sx={{ flex: 1, padding: 3 }}>
-            <Typography variant="h4" gutterBottom color="black">
-              Welcome, {userData.name}
-            </Typography>
-            <Grid container spacing={3}>
-              {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
-                const data =
-                  idx === 0
-                    ? `${userData.monthlyData} units`
-                    : idx === 1
-                    ? `${userData.dailyData} hours`
-                    : `${userData.yearlyData} units`;
-                return (
-                  <Grid item xs={12} sm={4} key={idx}>
-                    <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom color="#A0AEC0">
-                          {label}
-                        </Typography>
-                        <Typography variant="h4" color="#2D3748">
-                          {data}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
-
-              <Grid item xs={12} sm={6}>
-                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
-
                   <CardContent>
                     <Typography variant="h6" gutterBottom color="#A0AEC0">
-                      Data Distribution
+                      {label}
                     </Typography>
-                    <Box sx={{ height: 250 }}>
-                      <Doughnut data={doughnutData} options={graphOptions} />
-                    </Box>
+                    <Typography variant="h4" color="#2D3748">
+                      {data}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom color="#A0AEC0">
-                      Monthly Usage
-                    </Typography>
-                    <Box sx={{ height: 250 }}>
-                      <Bar data={barData} options={graphOptions} />
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-
             );
           })}
  
@@ -390,25 +322,26 @@ const DashboardApp = () => {
           </Grid>
         </Grid>
       </Box>
+      
     {/* Product Catalog Management */}
     <Box sx={{ padding: 3 }}>
     <Typography variant="h5" gutterBottom   sx={{ color: '#FFFFFF' }}>
        Product Catalog Management  
     </Typography>
     {/* Add New Product Button */}
-
-            </Grid>
-          </Box>
-
-          <Box sx={{ padding: 3 }}>
-            <Typography variant="h5" gutterBottom sx={{ color:"black" }}>
-              Product Catalog Management
-            </Typography>
-            {/* Add New Product Button */}
-
     <Button variant="contained" color="primary" onClick={handleAddProduct}>
       Add New Product
     </Button>
+     {/* Bulk Actions */}
+
+    {/* { { {selectedProducts .length > 0 && (
+          <Box sx={{ marginTop: 2 }}>
+            <Button variant="outlined" color="error" onClick={handleBulkDelete}>
+              Delete Selected
+            </Button>
+          </Box>
+        )} } } */}
+
  
     {/* Search & Filters */}
     <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2  , '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
@@ -426,8 +359,8 @@ const DashboardApp = () => {
         <InputLabel sx={{ color: 'black' }}>Category </InputLabel>
         <Select value={filterCategory} onChange={handleCategoryFilterChange}>
           <MenuItem value="">All Categories</MenuItem>
-          <MenuItem value="Category 1">Category 1</MenuItem>
-          <MenuItem value="Category 2">Category 2</MenuItem>
+          <MenuItem value="Category 1"> Category 1</MenuItem>
+          <MenuItem value="Category 2"> Category 2</MenuItem>
         </Select>
       </FormControl>
       <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
@@ -450,24 +383,29 @@ const DashboardApp = () => {
               <Typography variant="body2">Price: ${product.price}</Typography>
               <Typography variant="body2">Category: {product.category}</Typography>
               <Typography variant="body2">Stock: {product.stock}</Typography>
+             
     
               {/* Edit and Delete Actions */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                <Button variant="outlined" onClick={() => handleEditProduct(product.id)}>
-                  Edit
-                </Button>
-                <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product.id)}>
-                  Delete
-                </Button>
-            {product.stock <= 5 && (
-              <Button
-                variant="contained"
-                color="warning"
-                onClick={() => handleReorderProduct(product.id)} >
-                Reorder
-              </Button>
-            )}
-             </Box>
+  <Button variant="outlined" onClick={(e) => {e.stopPropagation(); handleEditProduct(product.id)}}>
+    Edit
+  </Button>
+  <Button variant="outlined" color="error" onClick={(e) =>{e.stopPropagation(); handleDeleteProduct(product.id)}}>
+    Delete
+  </Button>
+  {product.stock <= 10 && (
+    <Button
+      variant="contained"
+      color="warning"
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent modal from opening
+        handleReorderProduct(product.id);
+      }}
+    >
+      Reorder
+    </Button>
+  )}
+</Box>
              </CardContent>
            </Card>
          </Grid>
@@ -524,58 +462,62 @@ const DashboardApp = () => {
     </Box>
   </Modal>
       </Box>
-   
+      
      {/* Product Details View Modal */}
-{selectedProducts && (
+     {selectedProducts && (
   <Modal open={!!selectedProducts} onClose={() => setSelectedProducts(null)}>
-    <Box sx={{ padding: 3, width: 600, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
-      <Typography variant="h6">{selectedProducts.name}</Typography>
-      {/* Product Images */}
-      <Box>
-        <Typography variant="subtitle1">Product Images:</Typography>
-        {/* Render images */}
+    <Box sx={{ padding: 2, width: 1100, margin: 'auto', overflowY: 'auto', height: 800, flexDirection:'row',   backgroundColor: 'white', borderRadius: 2 }}>
+      {/* Product Name */}
+      <Typography variant="h5" sx={{ marginLeft:2}}>{selectedProducts.name}</Typography>
+
+      {/* Product Description - Displayed below the product name */}
+      <Box sx={{ marginTop: 1 , fontFamily: 'YourCustomFont, sans-serif', marginLeft:2 }}>
+        <Typography variant="body2"  sx={{ fontFamily: 'YourCustomFont, sans-serif', marginleft:2 }}>{selectedProducts.description}</Typography>
       </Box>
-      {/* Product Description */}
-      <Box>
-        <Typography variant="subtitle1">Description:</Typography>
-        <Typography variant="body2">{selectedProducts.description}</Typography>
-      </Box>
-      {/* Product Variants */}
-      <Box>
-        <Typography variant="subtitle1">Variants:</Typography>
-        <Typography variant="body2">{selectedProducts.variants}</Typography>
-      </Box>
+
+      
+     
+
       {/* Sales Performance */}
-      <Box>
-        <Typography variant="subtitle1">Sales Performance:</Typography>
+      <Box sx={{display : 'flex', justifyContent: 'space-between', marginTop: 4}}>
+      
+      <Grid item xs={12} sm={4}>
+   
+        <Typography variant= "h6" sx={{ marginLeft:2}}>Sales Performance:</Typography>
+
         <SalesAnalytics productId={selectedProducts.id} />
-      </Box>
+        </Grid>
+      
+     </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop:3 }}>
       {/* Profitability */}
-      <Box>
-        <Typography variant="subtitle1">Profitability:</Typography>
+      <Box sx={{  flex: 1, position: 'relative', marginLeft: 2}}>
+        <Typography variant="h6" >Profitability:</Typography>
         <Typography variant="body2">
           Margin: {selectedProducts.margin}% | Revenue: ${selectedProducts.revenue}
         </Typography>
       </Box>
+
       {/* Inventory Levels */}
-      <Box>
-        <Typography variant="subtitle1">Inventory Levels:</Typography>
+      <Box sx={{flex:1, marginRight: 2  }}>
+        <Typography variant="h6"  >Inventory Levels:</Typography>
         <Typography variant="body2">Stock: {selectedProducts.stock}</Typography>
       </Box>
-      {/* Pricing and Discount */}
-      <Box>
-        <Typography variant="subtitle1">Pricing & Discounts:</Typography>
+
+      {/* Pricing and Dint="h3" scount */}
+      <Box sx={{ flex:1 }}>
+        <Typography variant="h6" >Pricing & Discounts:</Typography>
         <Typography variant="body2">Price: ${selectedProducts.price}</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto' }}>
         <Button variant="contained" onClick={() => {}}>
           Update Price
         </Button>
-      </Box>
-      {/* Sales Channels */}
-      <Box>
-        <Typography variant="subtitle1">Sales Channels:</Typography>
-        <Typography variant="body2">{selectedProducts.salesChannels}</Typography>
+      </Box> 
       </Box>
     </Box>
+    </Box>
+  
+    
   </Modal>
 )}
         {/* Sales Analytics Sidebar or Below Section */}
@@ -595,16 +537,10 @@ const DashboardApp = () => {
           </Box>
        </Box>
     </Box>
-    /</Box>
     </Box>
-    </Box>
-    
-   
- 
+    //</Box>
+    //</Box>
       );
 };
  
-
 export default DashboardApp;
-
-

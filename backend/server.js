@@ -5,11 +5,11 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
+const Usage=require('./models/Usage');
+const usageRoutes = require('./routes/usageRoute');
 
 require('dotenv').config();
 const app = express();
- 
  
 // Middleware
 app.use(cors());
@@ -20,7 +20,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
+app.use('/api', usageRoutes);
  
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {

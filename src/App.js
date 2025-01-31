@@ -90,9 +90,6 @@ const App = () => {
 <Route path="/settingpage" element={<SettingPage />} />
 <Route path="/supportpage" element={<SupportPage />} />
 
-                <Route path="/settingpage" element={<SettignPage />} />
-                <Route path="/supportpage" element={<SupportPage />} />
-
 </Routes>
 </Layout>
 </Router>

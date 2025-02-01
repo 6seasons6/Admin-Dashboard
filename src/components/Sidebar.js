@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Correctly import only `useAuth`
 
 import { FaHome, FaUsers, FaChartLine, FaProductHunt, FaCalendar ,FaCheckCircle } from 'react-icons/fa';
+
+
 import { SiGoogleanalytics } from 'react-icons/si';
 import { IoSettings } from 'react-icons/io5';
 import image from '../images/image.png'

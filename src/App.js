@@ -28,8 +28,7 @@ import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
 
-
-
+ 
 const Layout = ({ children }) => {
   const location = useLocation();
  
@@ -47,10 +46,7 @@ const Layout = ({ children }) => {
 </div>
   );
 };
-
-
-
-
+ 
 const App = () => {
   return (
     <AuthProvider>
@@ -113,6 +109,5 @@ const App = () => {
     </AuthProvider>
   );
 };
-
+ 
 export default App;
-

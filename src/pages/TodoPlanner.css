@@ -1,0 +1,90 @@
+/* General Container Styles */
+.todo-planner-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+    max-width: 900px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Form Container */
+  .form-container {
+    background-color: rgba(199, 237, 230, 0.827);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(41, 40, 40, 0.1);
+  }
+  
+  h3 {
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    color: #131212;
+    text-align: center;
+    ;
+  }
+  
+  .task-form {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  /* Input Fields and Textarea */
+  .inputBox {
+    width: 30%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Task List Styling */
+  .task-list {
+    margin-top: 20px;
+  }
+  
+  .task-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .task-item input {
+    margin-right: 10px;
+  }
+  
+  .done {
+    color: green;
+  }
+  
+  .pending {
+    color: red;
+  }
+  .spaceAdd{
+    padding: 2px;
+  }

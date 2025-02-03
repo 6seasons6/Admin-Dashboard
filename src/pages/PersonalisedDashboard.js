@@ -22,7 +22,6 @@ import {
   FormControl,
 } from '@mui/material';
 import '../components/Sidebar';
-
 // Register all necessary components for charts
 Chart.register(...registerables);
 
@@ -40,7 +39,6 @@ const DashboardApp = () => {
   const [usageData, setUsageData] = useState({ daily: 0, monthly: 0, yearly: 0 }); // Usage data
   const [screenTime, setScreenTime] = useState(0); // Track screen time
   const [startTime, setStartTime] = useState(null); // Track session start time
-
   useEffect(() => {
     const fetchData = async () => {
       try {

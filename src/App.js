@@ -24,8 +24,8 @@ import UserTable from './components/UserManagement/UserTable';
 import { createTheme } from '@mui/material/styles';
 import SettignPage from './pages/Settingpage';
 import SupportPage from './pages/Supportpage';
-
-
+import Profile from './pages/Profile';
+import { useState } from "react";
 const theme = createTheme({
   palette: {
     primary: {
@@ -40,13 +40,12 @@ const theme = createTheme({
   },
   spacing: 8, // Default spacing
 });
-
-
-
-
 const App = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   return (
+    
     <AuthProvider>
+    
       <Router>
         <div className="app">
           <Sidebar />
@@ -61,18 +60,13 @@ const App = () => {
                 <Route path="/products" element={<ProductList />} />
 
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
-                
-                <Route path="/users" element={<UserList />} />
-
                 <Route path="/ProductList" element={<ProductList />} />
-                <Route path="/ProductForm" element={<ProductForm/>} />
-                <Route path="/ProductTable" element={<ProductTable/>} />
-
-
+                <Route path="/ProductForm" element={<ProductForm />} />
+                <Route path="/ProductTable" element={<ProductTable />} />
                 <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
-                <Route path="/users/edit/:userId" element={<UserForm />} /> 
+                <Route path="/users/edit/:userId" element={<UserForm />} />
                 <Route path="/user-table" element={<UserTable />} />
-                
+
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
 
@@ -87,19 +81,15 @@ const App = () => {
                 <Route path="/register" element={<Register />} />
 
 
-                <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
+                <Route path="./pages/Dashboard.js" element={<Dashboard />} />
 
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-
-                
-
-
-
-                {/* Legacy Routes (if needed) */}
+                  {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports" element={<Graphs />} />
                 <Route path="/settingpage" element={<SettignPage />} />
                 <Route path="/supportpage" element={<SupportPage />} />
+                <Route path="/Profile" element={<Profile />} />
 
               </Routes>
             </div>
@@ -109,6 +99,7 @@ const App = () => {
         </div>
       </Router>
     </AuthProvider>
+    
   );
 };
 

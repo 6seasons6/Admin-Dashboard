@@ -11,9 +11,14 @@ const Usage=require('./models/Usage');
 
 require('dotenv').config();
 const app = express();
+
+const Product = require('./models/Product');
+const router = express.Router();
+=======
 //const TodoPlanner = require('./models/TodoPlanner'); 
  
  
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -25,7 +30,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
+app.use('/api', usageRoutes);
+ // Mount product routes under "/api"
+app.use('/api', productRoutes);
+
+
  
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -623,6 +634,16 @@ app.get("/api/usage", async (req, res) => {
   }
 });
 
+
+ // Assuming Product model is defined
+
+app.get('/api/search', async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
 // Define the /api/TodoPlanner route
 app.get('/api/todoplanner', (req, res) => {
     console.log('Request received for /api/todoplanner');
@@ -700,6 +721,16 @@ app.post('/login', async (req, res) => {
 
 
 
+
+    // Search products by name
+    const results = await Product.find({ name: { $regex: query, $options: 'i' } });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error in search endpoint:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

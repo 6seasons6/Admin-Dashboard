@@ -24,6 +24,24 @@ import UserTable from './components/UserManagement/UserTable';
 //import { createTheme } from '@mui/material/styles';
 import SettignPage from './pages/Settingpage';
 import SupportPage from './pages/Supportpage';
+
+import Profile from './pages/Profile';
+import { useState } from "react";
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+  spacing: 8, // Default spacing
+});
+
 import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
@@ -52,15 +70,20 @@ const Layout = ({ children }) => {
 };
 
  
+
 const App = () => {
+  const [searchQuery, setSearchQuery] = useState("");
   return (
+    
     <AuthProvider>
+    
       <Router>
       <Layout>
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
+
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductList" element={<ProductList />} />
@@ -75,15 +98,14 @@ const App = () => {
                         </ProtectedRoute>
                     } />
 
+
                 <Route path="/ProductList" element={<ProductList />} />
-                <Route path="/ProductForm" element={<ProductForm/>} />
-                <Route path="/ProductTable" element={<ProductTable/>} />
-
-
+                <Route path="/ProductForm" element={<ProductForm />} />
+                <Route path="/ProductTable" element={<ProductTable />} />
                 <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
-                <Route path="/users/edit/:userId" element={<UserForm />} /> 
+                <Route path="/users/edit/:userId" element={<UserForm />} />
                 <Route path="/user-table" element={<UserTable />} />
-                
+
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
 
@@ -96,22 +118,23 @@ const App = () => {
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+
+                <Route path="./pages/Dashboard.js" element={<Dashboard />} />
+
+
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-
-                
-
-
-
-                {/* Legacy Routes (if needed) */}
+                  {/* Legacy Routes (if needed) */}
                 <Route path="/users-old" element={<Users />} />
                 <Route path="/reports" element={<Graphs />} />
                 <Route path="/settingpage" element={<SettignPage />} />
                 <Route path="/supportpage" element={<SupportPage />} />
+                <Route path="/Profile" element={<Profile />} />
 
               </Routes>
               </Layout>
       </Router>
     </AuthProvider>
+    
   );
 };
  

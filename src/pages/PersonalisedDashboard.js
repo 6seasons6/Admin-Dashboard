@@ -29,7 +29,9 @@ import {
 //import { useNavigate } from 'react-router-dom';
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
 import '../components/Sidebar';
+
 import { Description } from '@mui/icons-material';
+
 
 // Register all necessary components for charts
 Chart.register(...registerables);
@@ -42,11 +44,20 @@ const DashboardApp = () => {
   const [products, setProducts] = useState([]); // Product list state
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility
   const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', stock: '' });
+
+  const [search, setSearch] = useState(''); // Search state
+  const [filterCategory, setFilterCategory] = useState(''); // Category filter
+  const [filterStock, setFilterStock] = useState(''); // Stock filter
+  const [usageData, setUsageData] = useState({ daily: 0, monthly: 0, yearly: 0 }); // Usage data
+  const [screenTime, setScreenTime] = useState(0); // Track screen time
+  const [startTime, setStartTime] = useState(null); // Track session start time
+
   // const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for detailed view
   const [search, setSearch] = useState('');  // Search state
   const [filterCategory, setFilterCategory] = useState('');  // Category filter
   const [filterStock, setFilterStock] = useState('');  // Stock filter
   const [selectedProducts, setSelectedProducts] = useState(null);
+
   useEffect(() => {
     const fetchData = async () => {
       try {

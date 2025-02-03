@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const usageRoutes = require('./routes/usageRoute');
+const Usage=require('./models/Usage');
 
 
 require('dotenv').config();
@@ -15,6 +17,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/api', usageRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:3000', // Adjust this to your frontend's URL

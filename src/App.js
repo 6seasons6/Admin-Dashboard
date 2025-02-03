@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route,useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
@@ -115,5 +114,6 @@ const App = () => {
     </AuthProvider>
   );
 };
+ 
  
 export default App;

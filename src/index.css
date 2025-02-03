@@ -160,6 +160,16 @@ body {
   font-size: 25px;
   margin-right: 5px;
 }
+.logo1 img{
+  width:140px;
+  height:140px;
+}
+
+.icons{
+  font-size: 25px;
+  margin-right: 10px;
+  color:#383838
+}
 
 
 .logo1 img{
@@ -242,6 +252,21 @@ body {
   display: flex;
   align-items: center;
 }
+.sidebar {
+  /* width: 200px; */
+  background-color: #f4f1f1;
+    height: 100vh;
+  padding: 80px 10px;
+  width: 230px;
+  background-color: #fff2df;
+  height: 100vh;
+  padding: 10px 10px;
+  border-radius: 25px;
+  position:sticky;
+  top:0;
+  left: 0;
+}
+
 
 
 

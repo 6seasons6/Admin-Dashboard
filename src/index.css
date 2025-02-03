@@ -107,7 +107,7 @@ body {
   font-weight: bold;
 }
 
-.icon-circle {
+.user-icon {
   width: 40px;           /* Circle diameter */
   height: 40px;          /* Circle diameter */
   border-radius: 50%;    /* Makes it a circle */
@@ -160,8 +160,6 @@ body {
   font-size: 25px;
   margin-right: 5px;
 }
-
-
 .logo1 img{
   width:140px;
   height:140px;
@@ -210,14 +208,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap:6rem;
+  gap:0rem;
   
 }
 
 .navbar .search-bar {
   margin-left: 10px;
   flex-grow: 1;
-  max-width: 150px;
   border:none;
 }
 .notification-button {
@@ -230,7 +227,7 @@ body {
 .navbar .navbar-links {
   display: flex;
   align-items: center;
- margin-left:8rem;
+ margin-left:20rem;
   gap: 3rem; 
 }
 
@@ -242,6 +239,21 @@ body {
   display: flex;
   align-items: center;
 }
+.sidebar {
+  /* width: 200px; */
+  background-color: #f4f1f1;
+    height: 100vh;
+  padding: 80px 10px;
+  width: 230px;
+  background-color: #fff2df;
+  height: 100vh;
+  padding: 10px 10px;
+  border-radius: 25px;
+  position:sticky;
+  top:0;
+  left: 0;
+}
+
 
 
 

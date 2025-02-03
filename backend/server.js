@@ -5,14 +5,19 @@ const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const usageRoutes = require('./routes/usageRoute');
+const Usage=require('./models/Usage');
 
+const Product = require('./models/Product');
 
 require('dotenv').config();
 const app = express();
+//const TodoPlanner = require('./models/TodoPlanner'); 
  
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/api', usageRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:3000', // Adjust this to your frontend's URL
@@ -92,6 +97,8 @@ app.post('/api/auth/login', async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    
  
     // Simulate a token
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
@@ -368,159 +375,7 @@ console.log('Database user:', user);
   }
 });
  
-// app.get('/api/usage', async (req, res) => {
-//   console.log("Received userId:", req.query.userId);
-//   const userId = req.query.userId;
-//   if (!userId) {
-//     return res.status(400).json({ message: 'User ID is required' });
-//   }
-
-//   try {
-//     const objId = new mongoose.Types.ObjectId(userId);
-//     // Fetch usage data from the database using the user ID
-//     const usageData = await Usage.findOne({ userId: objId});
-//     console.log("Usage data found:", usageData)
-//  // Assuming a 'Usage' model exists
-//     if (!usageData) {
-//       return res.status(404).json({ message: 'No usage data found for this user' });
-//     }
-
-//     res.status(200).json({
-//       daily: usageData.daily,
-//       monthly: usageData.monthly,
-//       yearly: usageData.yearly,
-//     });
-//   } catch (error) {
-//     console.error('Error fetching usage data:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
-
-// Dummy activity tracker (replace with actual logic)
-// let activityLog = {
-//   daily: 0,  // Number of hours or usage within the day
-//   monthly: 0,  // Number of hours or usage within the month
-//   yearly: 0  // Number of hours or usage within the year
-// };
-
-// app.get('/api/usage', async (req, res) => {
-//   const { userId } = req.query;
-
-//   if (!userId) {
-//     return res.status(400).json({ message: 'User ID is required' });
-//   }
-
-//   console.log("Received userId:", userId);
-
-//   try {
-//     const objId = new mongoose.Types.ObjectId(userId);
-//     let usageData = await Usage.findOne({ userId: objId });
-
-//     if (!usageData) {
-//       // No usage data found, create a new one
-//       const dailyUsage = calculateDailyUsage();
-//       const monthlyUsage = calculateMonthlyUsage();
-//       const yearlyUsage = calculateYearlyUsage();
-
-//       // Create new usage data
-//       const newUsageData = new Usage({
-//         userId: objId,
-//         daily: dailyUsage,
-//         monthly: monthlyUsage,
-//         yearly: yearlyUsage,
-//       });
-
-//       await newUsageData.save();
-//       console.log("New usage data created for user:", userId);
-//       return res.status(200).json({
-//         daily: dailyUsage,
-//         monthly: monthlyUsage,
-//         yearly: yearlyUsage,
-//       });
-//     } else {
-//       // Usage data exists, return it
-//       console.log("Usage data found for user:", userId);
-//       return res.status(200).json({
-//         daily: usageData.daily,
-//         monthly: usageData.monthly,
-//         yearly: usageData.yearly,
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error fetching usage data:', error);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// });
-
-// // Function to calculate daily usage
-// function calculateDailyUsage() {
-//   // In a real scenario, you'd calculate actual usage (e.g., based on recent user activity)
-//   return activityLog.daily; // Replace this with actual activity count (e.g., API calls today)
-// }
-
-// // Function to calculate monthly usage
-// function calculateMonthlyUsage() {
-//   // Logic to calculate monthly usage (e.g., sum of daily usage for the month)
-//   return activityLog.monthly; // Replace this with total usage in the current month
-// }
-
-// // Function to calculate yearly usage
-// function calculateYearlyUsage() {
-//   // Logic to calculate yearly usage (e.g., sum of monthly usage for the year)
-//   return activityLog.yearly; // Replace this with total usage for the current year
-// }
-
-// // Example to simulate adding usage data (you'd need to integrate with your system's tracking)
-// app.post('/api/track-usage', (req, res) => {
-//   const { userId, usageType, usageTime } = req.body;  // usageTime is the time spent in hours
-
-//   // Increment appropriate usage data based on the type (daily, monthly, yearly)
-//   if (usageType === 'daily') {
-//     activityLog.daily += usageTime;  // Add the usage time for the current day
-//   } else if (usageType === 'monthly') {
-//     activityLog.monthly += usageTime;  // Add to monthly usage
-//   } else if (usageType === 'yearly') {
-//     activityLog.yearly += usageTime;  // Add to yearly usage
-//   }
-
-//   // Update usage data in the database for the user
-//   Usage.findOneAndUpdate(
-//     { userId: new mongoose.Types.ObjectId(userId) },
-//     {
-//       $inc: {
-//         daily: usageTime,  // Increment daily usage
-//         monthly: usageTime,  // Increment monthly usage
-//         yearly: usageTime  // Increment yearly usage
-//       }
-//     },
-//     { new: true, upsert: true },  // Upsert if the user data doesn't exist
-//     (err, doc) => {
-//       if (err) {
-//         console.error('Error updating usage data:', err);
-//         return res.status(500).json({ message: 'Error updating usage data' });
-//       }
-//       res.status(200).json(doc);  // Respond with the updated document
-//     }
-//   );
-// });
-
-// // A function to reset daily usage every midnight
-// function resetDailyUsage() {
-//   const currentDate = new Date();
-//   const currentDay = currentDate.getDate();
-
-//   if (currentDay !== activityLog.dailyDay) {
-//     // At the start of a new day, reset the daily usage and update monthly/yearly usage
-//     activityLog.monthly += activityLog.daily;
-//     activityLog.yearly += activityLog.daily;
-//     activityLog.daily = 0;
-//     activityLog.dailyDay = currentDay; // Update the stored day to the current day
-//   }
-// }
-
-// // Call this function at midnight or through a scheduler like cron to reset daily usage
-// setInterval(resetDailyUsage, 24 * 60 * 60 * 1000);
-
+//calculatinguse screen time based on the use of website
 async function trackUsage(userId, sessionDuration) {
   try {
     const sessionDurationInHours = sessionDuration / 60; // Convert minutes to hours
@@ -578,7 +433,7 @@ async function trackUsage(userId, sessionDuration) {
   }
 }
 
-// ✅ Endpoint to track usage
+// Endpoint to track usage
 app.post("/api/track-usage", async (req, res) => {
   const { userId, sessionDuration } = req.body;
 
@@ -590,7 +445,7 @@ app.post("/api/track-usage", async (req, res) => {
   res.status(200).json({ message: "Usage data updated successfully" });
 });
 
-// ✅ Endpoint to get usage data for a user
+//  Endpoint to get usage data for a user
 app.get("/api/usage", async (req, res) => {
   const { userId } = req.query;
 
@@ -604,7 +459,7 @@ app.get("/api/usage", async (req, res) => {
     if (!usageData) {
       return res.status(404).json({ message: "No usage data found for this user" });
     }
-
+    //const monthlyUsage = usageData.monthly; 
     res.status(200).json({
       daily: usageData.daily.toFixed(5),
       monthly: usageData.monthly.toFixed(5),
@@ -616,6 +471,180 @@ app.get("/api/usage", async (req, res) => {
   }
 });
 
+
+//adding products
+app.post('/api/products', async (req, res) => {
+  const { name, price, category, stock } = req.body;
+
+  // Validate input
+  if (!name || !price || !category || stock === undefined) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized: No token provided" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+  try {
+    const newProduct = new Product({ name, price, category, stock ,userId});
+    await newProduct.save();
+    res.status(201).json({ message: 'Product added successfully', data: newProduct });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding product', error });
+  }
+});
+
+app.get('/api/products', async (req, res) => {
+  try {
+      const products = await Product.find({ userId: { $exists: true } });  // Assuming Mongoose
+      res.json(products);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// Update Product (Edit Product)
+app.put("/api/products/:id", async (req, res) => {
+  try {
+      const { id } = req.params;
+      const { name, price, category, stock } = req.body;
+
+      // Find the product by ID and update
+      const updatedProduct = await Product.findByIdAndUpdate(
+          id,
+          { name, price, category, stock },
+          { new: true, runValidators: true } // Return updated document
+      );
+
+      if (!updatedProduct) {
+          return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.status(200).json(updatedProduct);
+  } catch (error) {
+      res.status(500).json({ message: "Error updating product", error: error.message });
+  }
+});
+
+// Delete a product
+app.delete('/api/products/:id', async (req, res) => {
+  const { id } = req.params;
+  const token = req.headers.authorization?.split(" ")[1]; // Extract Bearer token
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id; 
+
+    // Find the product by ID
+    const product = await Product.findById(id);
+    console.log("Fetched Product:", product); // Debugging log
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Ensure product.userId exists before calling toString()
+    if (!product.userId) {
+      return res.status(500).json({ message: "Product data error: userId missing" });
+    }
+
+    if (product.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Forbidden: Not authorized to delete this product" });
+    }
+
+    await product.deleteOne();
+    res.status(200).json({ message: "Product deleted successfully" });
+
+  } catch (err) {
+    console.error("Error verifying token:", err.message);
+    return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
+  }
+});
+
+// Define the /api/TodoPlanner route
+app.get('/api/todoplanner', (req, res) => {
+    console.log('Request received for /api/todoplanner');
+    res.json({ message: 'Here is your todo planner data' });
+});
+
+const TaskSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  date: Date,
+  status: { type: String, default: 'not viewed' },
+  completed: { type: Boolean, default: false },
+});
+
+const Task = mongoose.model('Task', TaskSchema);
+// API route to get tasks from DB
+app.get('/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find();  // Fetch tasks from DB
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error: error.message });
+  }
+});
+
+
+// POST /tasks - Adding a new task
+app.post('/tasks', async (req, res) => {
+  try {
+    const newTask = new Task({
+      title: req.body.title,
+      description: req.body.description,
+      date: req.body.date,
+      status: req.body.status,
+      completed: req.body.completed,
+    });
+    await newTask.save();
+    res.status(201).json(newTask);  // Respond with the added task
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(400).json({ message: 'Error adding task', error: error.message });
+  }
+});
+
+// Authentication route
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Check if user is the specific one with 'info@6seasonsorganic.com'
+    if (email === 'info@6seasonsorganic.com') {
+      const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+      return res.json({ token, access: 'granted' });
+    } else {
+      return res.json({ access: 'denied' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;

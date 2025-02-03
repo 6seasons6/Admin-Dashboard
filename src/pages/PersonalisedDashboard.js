@@ -26,6 +26,10 @@ import MuiAlert from '@mui/material/Alert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import the check circle icon
 import '../components/Sidebar';
 
+import { Description } from '@mui/icons-material';
+
+
+
 // Register all necessary components for charts
 Chart.register(...registerables);
 
@@ -58,6 +62,13 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
       console.error('Failed to load products:', err);
     }
   };
+
+  // const [selectedProduct, setSelectedProduct] = useState(null); // Selected product for detailed view
+  const [search, setSearch] = useState('');  // Search state
+  const [filterCategory, setFilterCategory] = useState('');  // Category filter
+  const [filterStock, setFilterStock] = useState('');  // Stock filter
+  const [selectedProducts, setSelectedProducts] = useState(null);
+
 
   useEffect(() => {
     const fetchData = async () => {

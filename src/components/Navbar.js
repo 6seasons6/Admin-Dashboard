@@ -1,196 +1,207 @@
 import React, { useState, useEffect } from "react";
 import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import PersonIcon from "@mui/icons-material/Person";
+import {
+  TextField,
+  InputAdornment,
+  Button,
+  IconButton,
+  Typography,
+  Badge,
+  Box,
+  Menu,
+  MenuItem,
+  List,
+  ListItem,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import { TextField, InputAdornment, Button, IconButton, Typography, Badge } from "@mui/material";
-import image from "../images/image.png";
+import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
+import { FaUserCircle } from "react-icons/fa";
 
 const Navbar = () => {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
-  const [currentDateTime, setCurrentDateTime] = useState("");
+  const { authData, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [notifications] = useState(0); 
+  const [searchResults, setSearchResults] = useState([]); // State for storing search results
+  const [notifications] = useState(0);
+  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev);
-  };
-  const handleLogout = () => {
-    setIsLoggedIn(false); 
-    navigate("/login"); 
-  };
 
-  // Track current date and time
+  // Fetch user data when authData changes or on route change
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!authData?.token) {
+        setUserData(null);
+        return;
+      }
+      try {
+        const response = await axios.get("/api/user", {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+        setUserData(response.data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setUserData(null);
+      }
+    };
+    fetchUserData();
+  }, [authData, location.pathname]);
+
+  // Update time every second
   useEffect(() => {
     const interval = setInterval(() => {
-      const now = new Date();
-      setCurrentDateTime(now.toLocaleString());
+      setCurrentDateTime(new Date().toLocaleString());
     }, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  // Handle search query change
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
+  // Handle menu open/close
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
-  const handleNotificationClick = () => {
-    console.log("Notification clicked");
+  // Handle user logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    logout();
+    setUserData(null);
+    handleMenuClose();
+    navigate("/login");
+  };
+
+  // Handle search functionality
+  const handleSearch = async () => {
+    if (searchQuery.trim()) {
+      try {
+        // Use searchQuery (not search) in the Axios call
+        const response = await axios.get(`http://localhost:3000/api/search?q=${searchQuery}`);
+        setSearchResults(response.data); // Store the search results in state
+      } catch (error) {
+        console.error("Error searching products:", error);
+      }
+    } else {
+      setSearchResults([]); // Clear search results if query is empty
+    }
   };
 
   return (
     <nav className="navbar">
       {location.pathname === "/dashboard" && (
         <div className="dashboard-links">
-          <div className="image">
-            <img src={image} alt="logo1" />
-          </div>
-
           <div className="navbar-links">
-            {/* Search Bar */}
-            <div className="search-bar">
-              <TextField
-                variant="outlined"
-                placeholder="Search..."
-                size="small"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    border: "none",
-                    "&:hover fieldset": {
-                      border: "none",
-                    },
-                    "&.Mui-focused fieldset": {
-                      border: "none",
-                    },
-                  },
-                }}
-              />
-            </div>
-  {/* Links Section */}
-            <Button
-              component={RouterLink}
-              to="/supportpage"
-              variant="text"
-              color="primary"
-              size="medium"
-              sx={{ fontSize: "15px" }}
-            >
+            <Button component={RouterLink} to="/supportpage" variant="text">
               SUPPORTS
             </Button>
-            <Button
-              component={RouterLink}
-              to="/reports"
-              variant="text"
-              color="primary"
-              size="medium"
-              sx={{ fontSize: "15px" }}
-            >
+            <Button component={RouterLink} to="/reports" variant="text">
               REPORTS
             </Button>
-            <Button
-              component={RouterLink}
-              to="/settingpage"
-              variant="text"
-              color="primary"
-              size="medium"
-              sx={{ fontSize: "15px" }}
-            >
-              SETTINGS
-            </Button>
-            <IconButton
-              color="inherit"
-              onClick={handleNotificationClick}
-              sx={{
-                backgroundColor: "transparent",
-                "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.1)" },
-                marginLeft: "10px", 
+            <TextField
+              variant="outlined"
+              placeholder="Search..."
+              size="small"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)} // Update query as the user types
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch(); // Trigger search on "Enter"
               }}
-            >
-              <Badge badgeContent={notifications} color="error">
-                <NotificationsIcon sx={{ color: "black" }} />
-              </Badge>
-            </IconButton>
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  border: "none",
+                  width: "10rem",
+                  "&:hover fieldset": { border: "none" },
+                  "&.Mui-focused fieldset": { border: "none" },
+                },
+              }}
+            />
           </div>
 
-          <div className="current-datetime" style={{ marginLeft: "auto" }}>
-            <Typography variant="body2" color="text.secondary">
-              {currentDateTime}
-            </Typography>
-          </div>
+          {/* Display search results if any */}
+          {searchResults.length > 0 && (
+            <div className="search-results">
+              <Typography variant="h6">Search Results:</Typography>
+              <List>
+                {searchResults.map((result, index) => (
+                  <ListItem key={index} style={{ color: "yellow" }}>
+                    {result.name} {/* Display product name */}
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          )}
+
+          <IconButton color="inherit" sx={{ marginLeft: "10px" }}>
+            <Badge badgeContent={notifications} color="error">
+              <NotificationsIcon
+                sx={{ color: "black", boxShadow: "none", marginLeft: "17rem" }}
+              />
+            </Badge>
+          </IconButton>
         </div>
       )}
-
       {location.pathname !== "/dashboard" && (
-        <Typography variant="h6" component="div" className="navbar-title">
+        <Typography variant="h6" className="navbar-title">
           Admin Panel
         </Typography>
       )}
 
-      {/* User Icon and Login Icon */}
-      <div className="dropdown" style={{ position: "relative" }}>
-        {!isLoggedIn ? (
-          <IconButton
-            onClick={() => navigate("/login")} 
-            style={{
-              fontSize: "24px", 
-              color: "black", 
-            }}
-          >
-            <PersonIcon />
-          </IconButton>
-        ) : (
-          <div>
-            <div
-              className="icon-container"
-              onClick={toggleDropdown} 
-              style={{ cursor: "pointer" }}
-            >
-              <PersonIcon style={{ color: "black" }} />
-            </div>
-            {dropdownVisible && (
-              <ul
-                className="dropdown-menu"
-                style={{
-                  position: "absolute",
-                  top: "40px",
-                  right: "0",
-                  background: "white",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  listStyle: "none",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  zIndex: 10,
-                  minWidth: "150px",
-                }}
-              >
-                <li style={{ margin: "5px 0" }}>
-                  <Button
-                    onClick={handleLogout} 
-                    variant="text"
-                    style={{ color: "red" }}
-                    fullWidth
-                  >
-                    Logout
-                  </Button>
-                </li>
-              </ul>
-            )}
-          </div>
-        )}
+      {/* User Dropdown */}
+      <div
+        className="user-icon"
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          boxShadow: "none",
+          marginRight: "3rem",
+        }}
+      >
+        <Box
+          display="flex"
+          alignItems="center"
+          sx={{ cursor: "pointer" }}
+          onClick={handleMenuOpen}
+        >
+          <FaUserCircle style={{ color: "black", marginRight: "8px" }} size={32} />
+          {userData && (
+            <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "green" }}>
+              {userData.name}
+            </Typography>
+          )}
+        </Box>
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          {!userData ? (
+            <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+          ) : (
+            [
+              <MenuItem key="settings" onClick={() => navigate("/settingpage")}>
+                Settings
+              </MenuItem>,
+              <MenuItem key="editProfile" onClick={() => navigate("/Profile")}>
+                Edit Profile
+              </MenuItem>,
+              <MenuItem key="logout" onClick={handleLogout}>
+                Logout
+              </MenuItem>,
+            ]
+          )}
+        </Menu>
       </div>
     </nav>
   );
 };
+
 export default Navbar;

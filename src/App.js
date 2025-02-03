@@ -43,11 +43,14 @@ const Layout = ({ children }) => {
   const location = useLocation();
  
   // Hide Sidebar only when there is no path (i.e., homepage `/`)
-  const showSidebar = location.pathname !== "/";
+  
+  const hiddenPaths=["/","/login","/register","/forgot-password"];
+  
+  
  
   return (
 <div className="app" style={{ display: "flex" }}>
-      {showSidebar && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
+      {!hiddenPaths.includes(location.pathname) && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
 <div className="main-content" style={{ flex: 1 }}>
 <Navbar />
 <div className="content">{children}</div>

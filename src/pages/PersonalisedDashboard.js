@@ -29,7 +29,7 @@ import {
 //import { useNavigate } from 'react-router-dom';
 import SalesAnalytics from '../components/Analytics/SalesAnalytics';
 import '../components/Sidebar';
-import { Description } from '@mui/icons-material';
+//import { Description } from '@mui/icons-material';
 
 // Register all necessary components for charts
 Chart.register(...registerables);
@@ -249,7 +249,7 @@ const DashboardApp = () => {
 
   return (
  
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}> {/* Gray background */}
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4 ' }}> {/* Gray background */}
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom>
           </Typography>
@@ -260,11 +260,14 @@ const DashboardApp = () => {
         display: 'flex',
         flexDirection: 'column',  // Ensure content is stacked vertically
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #6a11cb, #2575fc)',
+        background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
       }}
     >
-      <Box sx={{ flex: 1, padding: 3 }}>
-        <Typography variant="h4" gutterBottom color="white">
+     <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+
+ }}>
+      <Box sx={{ flex: 1, padding: 3, color: 'A2D5AB'}}>
+        <Typography variant="h4" gutterBottom color="A0AEC0">
  
           Welcome, {userData.name}
         </Typography>
@@ -277,9 +280,16 @@ const DashboardApp = () => {
                 : idx === 1
                 ? `${userData.dailyData} hours`  // Daily data in hours
                 : `${userData.yearlyData} units`; // Yearly data in units
+
+                const colors = [
+                  '#fff9c4', 
+                  '#b9f6ca', 
+                  '#ffe0b2',
+                ];
+        
             return (
               <Grid item xs={12} sm={4} key={idx}>
-                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
+                <Card sx={{ height: '100%', backgroundColor: colors[idx], borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
                   <CardContent>
                     <Typography variant="h6" gutterBottom color="#A0AEC0">
                       {label}
@@ -538,7 +548,7 @@ const DashboardApp = () => {
        </Box>
     </Box>
     </Box>
-    //</Box>
+    </Box>
     //</Box>
       );
 };

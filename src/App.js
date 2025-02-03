@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route,useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -24,8 +24,36 @@ import UserTable from './components/UserManagement/UserTable';
 import { createTheme } from '@mui/material/styles';
 import SettignPage from './pages/Settingpage';
 import SupportPage from './pages/Supportpage';
+import TodoPlanner from './pages/TodoPlanner';
+import ProtectedRoute from "./components/ProtectedRoute";
+import SalesAnalytics from "./components/Analytics/SalesAnalytics";
 import Profile from './pages/Profile';
 import { useState } from "react";
+
+
+const Layout = ({ children }) => {
+  const location = useLocation();
+ 
+  // Hide Sidebar only when there is no path (i.e., homepage `/`)
+  
+  const hiddenPaths=["/","/login","/register","/forgot-password"];
+  
+  
+ 
+  return (
+<div className="app" style={{ display: "flex" }}>
+      {!hiddenPaths.includes(location.pathname) && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
+<div className="main-content" style={{ flex: 1 }}>
+<Navbar />
+<div className="content">{children}</div>
+<Footer />
+</div>
+</div>
+  );
+};
+
+ 
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -41,25 +69,24 @@ const theme = createTheme({
   spacing: 8, // Default spacing
 });
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  
   return (
     
     <AuthProvider>
     
       <Router>
-        <div className="app">
-          <Sidebar />
-          <div className="main-content">
-            <Navbar />
-            <div className="content">
+      <Layout>
               <Routes>
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
-
+                <Route path="/dashboard" element={<PersonalisedDashboard />} />
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
 
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
+                
+                <Route path="/users" element={<UserList />} />
+
                 <Route path="/ProductList" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
                 <Route path="/ProductTable" element={<ProductTable />} />
@@ -74,14 +101,14 @@ const App = () => {
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
-
+                <Route path="/analytics" element={<SalesAnalytics />} />
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
 
-                <Route path="./pages/Dashboard.js" element={<Dashboard />} />
+                <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
 
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                   {/* Legacy Routes (if needed) */}
@@ -92,16 +119,12 @@ const App = () => {
                 <Route path="/Profile" element={<Profile />} />
 
               </Routes>
-            </div>
-
-            <Footer />
-          </div>
-        </div>
+              </Layout>
       </Router>
     </AuthProvider>
     
   );
 };
-
+ 
+ 
 export default App;
-

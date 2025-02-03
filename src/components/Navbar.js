@@ -18,7 +18,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import { FaUserCircle } from "react-icons/fa";
-
+ 
 const Navbar = () => {
   const { authData, logout } = useAuth();
   const [userData, setUserData] = useState(null);
@@ -29,7 +29,7 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
+ 
   // Fetch user data when authData changes or on route change
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,7 +49,7 @@ const Navbar = () => {
     };
     fetchUserData();
   }, [authData, location.pathname]);
-
+ 
   // Update time every second
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,7 +57,7 @@ const Navbar = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
+ 
   // Handle menu open/close
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -65,7 +65,7 @@ const Navbar = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
+ 
   // Handle user logout
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -74,7 +74,7 @@ const Navbar = () => {
     handleMenuClose();
     navigate("/login");
   };
-
+ 
   // Handle search functionality
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -89,7 +89,7 @@ const Navbar = () => {
       setSearchResults([]); // Clear search results if query is empty
     }
   };
-
+ 
   return (
     <nav className="navbar">
       {location.pathname === "/dashboard" && (
@@ -127,7 +127,7 @@ const Navbar = () => {
               }}
             />
           </div>
-
+ 
           {/* Display search results if any */}
           {searchResults.length > 0 && (
             <div className="search-results">
@@ -141,14 +141,32 @@ const Navbar = () => {
               </List>
             </div>
           )}
+ 
+ <IconButton
+  color="inherit"
+  disableRipple
+  sx={{
+    marginLeft: "10px",
+    "&:hover": { boxShadow: "none" },
+    "&:focus": { boxShadow: "none" },
+  }}
+>
+  <Badge
+    badgeContent={notifications}
+    color="error"
+    sx={{
+      // This targets the inner badge element
+      "& .MuiBadge-badge": {
+        boxShadow: "none",
+      },
+    }}
+  >
+    <NotificationsIcon
+      sx={{ color: "black", marginLeft: "12rem" }}
+    />
+  </Badge>
+</IconButton>
 
-          <IconButton color="inherit" sx={{ marginLeft: "10px" }}>
-            <Badge badgeContent={notifications} color="error">
-              <NotificationsIcon
-                sx={{ color: "black", boxShadow: "none", marginLeft: "17rem" }}
-              />
-            </Badge>
-          </IconButton>
         </div>
       )}
       {location.pathname !== "/dashboard" && (
@@ -156,7 +174,7 @@ const Navbar = () => {
           Admin Panel
         </Typography>
       )}
-
+ 
       {/* User Dropdown */}
       <div
         className="user-icon"
@@ -203,5 +221,5 @@ const Navbar = () => {
     </nav>
   );
 };
-
+ 
 export default Navbar;

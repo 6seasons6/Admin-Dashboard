@@ -9,6 +9,7 @@ const nodemailer = require('nodemailer');
 
 require('dotenv').config();
 const app = express();
+//const TodoPlanner = require('./models/TodoPlanner'); 
  
  
 // Middleware
@@ -93,6 +94,8 @@ app.post('/api/auth/login', async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    
  
     // Simulate a token
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
@@ -616,6 +619,82 @@ app.get("/api/usage", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// Define the /api/TodoPlanner route
+app.get('/api/todoplanner', (req, res) => {
+    console.log('Request received for /api/todoplanner');
+    res.json({ message: 'Here is your todo planner data' });
+});
+
+const TaskSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  date: Date,
+  status: { type: String, default: 'not viewed' },
+  completed: { type: Boolean, default: false },
+});
+
+const Task = mongoose.model('Task', TaskSchema);
+// API route to get tasks from DB
+app.get('/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find();  // Fetch tasks from DB
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks', error: error.message });
+  }
+});
+
+
+// POST /tasks - Adding a new task
+app.post('/tasks', async (req, res) => {
+  try {
+    const newTask = new Task({
+      title: req.body.title,
+      description: req.body.description,
+      date: req.body.date,
+      status: req.body.status,
+      completed: req.body.completed,
+    });
+    await newTask.save();
+    res.status(201).json(newTask);  // Respond with the added task
+  } catch (error) {
+    console.error('Error adding task:', error);
+    res.status(400).json({ message: 'Error adding task', error: error.message });
+  }
+});
+
+// Authentication route
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Check if user is the specific one with 'info@6seasonsorganic.com'
+    if (email === 'info@6seasonsorganic.com') {
+      const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+      return res.json({ token, access: 'granted' });
+    } else {
+      return res.json({ access: 'denied' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 
 // Start Server

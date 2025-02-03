@@ -35,8 +35,8 @@ const Sidebar = () => {
         </ul>
       </nav>
     </div>
+
   );
 };
- 
 export default Sidebar;
  

@@ -24,6 +24,24 @@ import UserTable from './components/UserManagement/UserTable';
 import { createTheme } from '@mui/material/styles';
 import SettignPage from './pages/Settingpage';
 import SupportPage from './pages/Supportpage';
+
+import Profile from './pages/Profile';
+import { useState } from "react";
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
+  spacing: 8, // Default spacing
+});
+
 import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
@@ -54,6 +72,7 @@ const Layout = ({ children }) => {
 
  
 
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -70,6 +89,10 @@ const theme = createTheme({
 });
 const App = () => {
   
+
+const App = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     
     <AuthProvider>
@@ -80,6 +103,7 @@ const App = () => {
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
+
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
 
@@ -94,6 +118,16 @@ const App = () => {
                 <Route path="/users/edit/:userId" element={<UserForm />} />
                 <Route path="/user-table" element={<UserTable />} />
 
+
+
+                <Route path="/ProductList" element={<ProductList />} />
+                <Route path="/ProductForm" element={<ProductForm />} />
+                <Route path="/ProductTable" element={<ProductTable />} />
+                <Route path="/users/new" element={<UserForm />} /> {/* For adding a new user */}
+                <Route path="/users/edit/:userId" element={<UserForm />} />
+                <Route path="/user-table" element={<UserTable />} />
+
+
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
 
@@ -107,6 +141,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
+                <Route path="./pages/Dashboard.js" element={<Dashboard />} />
 
                 <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
 

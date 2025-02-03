@@ -18,7 +18,9 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import { FaUserCircle } from "react-icons/fa";
+
  
+
 const Navbar = () => {
   const { authData, logout } = useAuth();
   const [userData, setUserData] = useState(null);
@@ -29,7 +31,7 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
- 
+
   // Fetch user data when authData changes or on route change
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,7 +51,7 @@ const Navbar = () => {
     };
     fetchUserData();
   }, [authData, location.pathname]);
- 
+
   // Update time every second
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,13 +59,46 @@ const Navbar = () => {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
- 
+
   // Handle menu open/close
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
+
+
+  // Handle menu open/close
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Handle user logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    logout();
+    setUserData(null);
+    handleMenuClose();
+    navigate("/login");
+  };
+
+  // Handle search functionality
+  const handleSearch = async () => {
+    if (searchQuery.trim()) {
+      try {
+        // Use searchQuery (not search) in the Axios call
+        const response = await axios.get(`http://localhost:3000/api/search?q=${searchQuery}`);
+        setSearchResults(response.data); // Store the search results in state
+      } catch (error) {
+        console.error("Error searching products:", error);
+      }
+    } else {
+      setSearchResults([]); // Clear search results if query is empty
+    }
+
   };
  
   // Handle user logout
@@ -167,6 +202,29 @@ const Navbar = () => {
   </Badge>
 </IconButton>
 
+
+          {/* Display search results if any */}
+          {searchResults.length > 0 && (
+            <div className="search-results">
+              <Typography variant="h6">Search Results:</Typography>
+              <List>
+                {searchResults.map((result, index) => (
+                  <ListItem key={index} style={{ color: "yellow" }}>
+                    {result.name} {/* Display product name */}
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+          )}
+
+          <IconButton color="inherit" sx={{ marginLeft: "10px" }}>
+            <Badge badgeContent={notifications} color="error">
+              <NotificationsIcon
+                sx={{ color: "black", boxShadow: "none", marginLeft: "17rem" }}
+              />
+            </Badge>
+          </IconButton>
+
         </div>
       )}
       {location.pathname !== "/dashboard" && (
@@ -174,7 +232,7 @@ const Navbar = () => {
           Admin Panel
         </Typography>
       )}
- 
+
       {/* User Dropdown */}
       <div
         className="user-icon"
@@ -221,5 +279,8 @@ const Navbar = () => {
     </nav>
   );
 };
- 
+
+export default Navbar;
+
+
 export default Navbar;

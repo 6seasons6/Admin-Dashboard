@@ -30,7 +30,7 @@ const SalesAnalytics = () => {
     datasets: [
       {
         label: 'Top Selling Products',
-        data: [5000, 4000, 6000, 3000,1500],
+        data: [500, 400, 600, 300,150],
         backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#FF7043','#FFD432',]
       },
     ],

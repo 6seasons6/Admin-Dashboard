@@ -21,31 +21,15 @@ import ForgotPassword from './components/Auth/ForgotPassword';
 //import ResetPassword from './components/Auth/ResetPassword';
 import UserForm from './components/UserManagement/UserForm';
 import UserTable from './components/UserManagement/UserTable';
-//import { createTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import SettignPage from './pages/Settingpage';
 import SupportPage from './pages/Supportpage';
-
-import Profile from './pages/Profile';
-import { useState } from "react";
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-  typography: {
-    fontFamily: 'Roboto, sans-serif',
-  },
-  spacing: 8, // Default spacing
-});
 
 import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
-
+import Profile from './pages/Profile';
+import { useState } from "react";
 
 
 const Layout = ({ children }) => {
@@ -69,10 +53,9 @@ const Layout = ({ children }) => {
   );
 };
 
- 
 
 const App = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  
   return (
     
     <AuthProvider>
@@ -86,6 +69,7 @@ const App = () => {
 
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
+
                 <Route path="/ProductList" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
                 <Route path="/ProductTable" element={<ProductTable />} />
@@ -98,6 +82,9 @@ const App = () => {
                         </ProtectedRoute>
                     } />
 
+=========
+
+                <Route path="/dashboard" element={<PersonalisedDashboard />} />
 
                 <Route path="/ProductList" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
@@ -119,7 +106,9 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                <Route path="./pages/Dashboard.js" element={<Dashboard />} />
+
+
+                <Route path="./pages/Dashboard.js" element={<Dashboard/>}/>
 
 
                 <Route path="/forgot-password" element={<ForgotPassword />} />

@@ -28,16 +28,20 @@ import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
 
- 
+
+
 const Layout = ({ children }) => {
   const location = useLocation();
  
   // Hide Sidebar only when there is no path (i.e., homepage `/`)
-  const showSidebar = location.pathname !== "/";
+  
+  const hiddenPaths=["/","/login","/register","/forgot-password"];
+  
+  
  
   return (
 <div className="app" style={{ display: "flex" }}>
-      {showSidebar && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
+      {!hiddenPaths.includes(location.pathname) && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
 <div className="main-content" style={{ flex: 1 }}>
 <Navbar />
 <div className="content">{children}</div>
@@ -46,6 +50,7 @@ const Layout = ({ children }) => {
 </div>
   );
 };
+
  
 const App = () => {
   return (

@@ -21,6 +21,9 @@ import {
   InputLabel,
   FormControl,
 } from '@mui/material';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import the check circle icon
 import '../components/Sidebar';
 
 // Register all necessary components for charts
@@ -40,6 +43,21 @@ const DashboardApp = () => {
   const [usageData, setUsageData] = useState({ daily: 0, monthly: 0, yearly: 0 }); // Usage data
   const [screenTime, setScreenTime] = useState(0); // Track screen time
   const [startTime, setStartTime] = useState(null); // Track session start time
+  const [message, setMessage] = useState(''); // State for messages
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar open/close
+const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackbar message
+  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
+  
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/products', {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,14 +112,9 @@ const DashboardApp = () => {
           }
         };
 
-        fetchUsageData();
+         fetchUsageData();
+        fetchProducts();
 
-        // Fetch products (mocked for now)
-        setProducts([
-          { id: 1, name: 'Product A', price: 50, category: 'Category 1', stock: 5 },
-          { id: 2, name: 'Product B', price: 30, category: 'Category 2', stock: 1 },
-          { id: 3, name: 'Product C', price: 20, category: 'Category 1', stock: 0 },
-        ]);
       } catch (err) {
         setError('Failed to load user data.');
       } finally {
@@ -117,6 +130,8 @@ const DashboardApp = () => {
     };
   }, [authData]);
 
+
+  
   const handleAddProduct = () => {
     setIsModalOpen(true);
   };
@@ -130,21 +145,66 @@ const DashboardApp = () => {
     setNewProduct((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveProduct = () => {
-    setProducts([...products, { ...newProduct, id: products.length + 1 }]);
-    setIsModalOpen(false);
-    setNewProduct({ name: '', price: '', category: '', stock: '' });
-  };
+    const handleSaveProduct = async () => {
+      setErrorMessage('');
+    
+      if (!newProduct.name || !newProduct.price || !newProduct.category || newProduct.stock === '') {
+        setSnackbarMessage('All fields are required.');
+        setSnackbarOpen(true);
+        return;
+      }
+    
+      try {
+        let response;
+        if (newProduct._id) {
+          response = await axios.put(`http://localhost:5000/api/products/${newProduct._id}`, newProduct, {
+            headers: { Authorization: `Bearer ${authData.token}` },
+          });
+        } else {
+          response = await axios.post('http://localhost:5000/api/products', newProduct, {
+            headers: { Authorization: `Bearer ${authData.token}` },
+          });
+          
+        }
+        console.log("Product saved:", response.data);
+        setProducts((prev) =>
+          newProduct._id
+            ? prev.map((p) => (p._id === newProduct._id ? { ...newProduct } : p))
+            : [...prev, { ...newProduct, _id: prev.length + 1 }]
+        );
+        fetchProducts();
 
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter((product) => product.id !== id));
+        setSnackbarMessage(newProduct._id ? 'Product updated successfully!' : 'Product added successfully!');
+        setSnackbarOpen(true);
+        setIsModalOpen(false);
+        setNewProduct({ name: '', price: '', category: '', stock: '' });
+      } catch (error) {
+        setSnackbarMessage('Failed to save product.');
+        setSnackbarOpen(true);
+      }
+    };
+    
+  const handleDeleteProduct = async (id) => {
+    console.log( "token",`${authData.token}`)
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/products/${id}`, {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+      fetchProducts();
+      console.log('Product deleted successfully:', response.data);
+    } catch (error) {
+      console.error('Failed to delete product:', error.response ? error.response.data : error.message);
+    }
   };
+  
 
-  const handleEditProduct = (id) => {
-    const product = products.find((p) => p.id === id);
-    setNewProduct(product);
-    setIsModalOpen(true);
-  };
+   const handleEditProduct = async (id) => {
+     const product = products.find((p) => p._id === id);
+     setNewProduct(product);
+     setIsModalOpen(true);
+   };
+  
+  
 
   const handleReorderProduct = (id) => {
     setProducts((prevProducts) =>
@@ -166,13 +226,21 @@ const DashboardApp = () => {
     setFilterStock(e.target.value);
   };
 
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = filterCategory ? product.category === filterCategory : true;
-    const matchesStock =
-      filterStock === '' ? true : filterStock === 'low' ? product.stock <= 5 : product.stock > 5;
-    return matchesSearch && matchesCategory && matchesStock;
-  });
+    const filteredProducts = products.filter((product) => {
+     const productName =  product.name ? product.name.toLowerCase() : '';
+      const matchesSearch = productName.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory = filterCategory ? product.category === filterCategory : true;
+      const stock = Number(product.stock);
+      // 
+      const matchesStock =
+      filterStock === ''
+        ? true
+        : filterStock === 'low'
+        ? stock <= 50
+        : stock > 50;
+     return matchesSearch && matchesCategory && matchesStock;
+    });
+
 
   if (loading) {
     return (
@@ -259,6 +327,12 @@ const DashboardApp = () => {
             <Typography variant="h4" gutterBottom color="black">
               Welcome, {userData.name}
             </Typography>
+            <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} >
+  <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+    <CheckCircleIcon sx={{ fontSize: 20, marginRight: 1 }} />
+    {snackbarMessage}
+  </MuiAlert>
+</Snackbar>
             <Grid container spacing={3}>
               {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
                 const data =
@@ -359,7 +433,7 @@ const DashboardApp = () => {
             {/* Product List */}
             <Grid container spacing={3} sx={{ marginTop: 2 }}>
               {filteredProducts.map((product) => (
-                <Grid item xs={12} sm={4} key={product.id}>
+                <Grid item xs={12} sm={4} key={product._id}>
                   <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
                     <CardContent>
                       <Typography variant="h6">{product.name}</Typography>
@@ -369,17 +443,17 @@ const DashboardApp = () => {
 
                       {/* Edit and Delete Actions */}
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                        <Button variant="outlined" onClick={() => handleEditProduct(product.id)}>
+                        <Button variant="outlined" onClick={() => handleEditProduct(product._id)}>
                           Edit
                         </Button>
-                        <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product.id)}>
+                        <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product._id)}>
                           Delete
                         </Button>
-                        {product.stock <= 5 && (
+                        
                           <Button variant="contained" color="warning" onClick={() => handleReorderProduct(product.id)}>
                             Reorder
                           </Button>
-                        )}
+                        
                       </Box>
                     </CardContent>
                   </Card>
@@ -391,7 +465,13 @@ const DashboardApp = () => {
           {/* Modal to Add/Edit Product */}
           <Modal open={isModalOpen} onClose={handleCloseModal}>
             <Box sx={{ padding: 3, width: 400, margin: 'auto', backgroundColor: 'white', borderRadius: 2 }}>
-              <Typography variant="h6">{newProduct.id ? 'Edit Product' : 'Add New Product'}</Typography>
+              <Typography variant="h6">{newProduct._id ? 'Edit Product' : 'Add New Product'}</Typography>
+               {/* Display error message */}
+    {errorMessage && (
+      <Typography variant="body2" color="error" sx={{ marginBottom: 2 }}>
+        {errorMessage}
+      </Typography>
+    )}
               <TextField
                 label="Product Name"
                 fullWidth

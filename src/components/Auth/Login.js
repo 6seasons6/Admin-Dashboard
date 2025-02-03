@@ -8,6 +8,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import loginpic from '../../images/loginpic.jpg';
 
 
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +23,8 @@ const Login = () => {
       const data = await login(email, password); // Call API
       setAuthData({ token: data.token, user: data.user });
       localStorage.setItem('authToken', data.token); // Save token locally
-      navigate('/dashboard'); // Redirect to dashboard
+      navigate('/dashboard');
+      // Redirect to dashboard
     } catch (error) {
       setErrorMessage('Invalid email or password');
     }
@@ -30,6 +32,7 @@ const Login = () => {
     login(email, password).then((data) => {
       setAuthData(data);
       navigate('/dashboard');
+      
     });
 
   };

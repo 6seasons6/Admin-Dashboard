@@ -26,7 +26,9 @@ import MuiAlert from '@mui/material/Alert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import the check circle icon
 import '../components/Sidebar';
 
+
 import { Description } from '@mui/icons-material';
+
 
 
 
@@ -323,53 +325,50 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#D3D3D3' }}>
-      <Box sx={{ flex: 1, padding: 3, color: 'white' }}>
-        <Typography variant="h4" gutterBottom></Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-            background: 'linear-gradient(135deg,rgba(245, 234, 236, 0.9), #D3D3D3)',
-          }}
-        >
-          <Box sx={{ flex: 1, padding: 3 }}>
-            <Typography variant="h4" gutterBottom color="black">
-              Welcome, {userData.name}
-            </Typography>
-            <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} >
-  <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-    <CheckCircleIcon sx={{ fontSize: 20, marginRight: 1 }} />
-    {snackbarMessage}
-  </MuiAlert>
-</Snackbar>
-            <Grid container spacing={3}>
-              {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
-                const data =
-                  idx === 0
-                    ? `${usageData.monthly} hours`
-                    : idx === 1
-                    ? `${usageData.daily} hours`
-                    : `${usageData.yearly} hours`;
-                return (
-                  <Grid item xs={12} sm={4} key={idx}>
-                    <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom color="#A0AEC0">
-                          {label}
-                        </Typography>
-                        <Typography variant="h4" color="#2D3748">
-                          {data}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                );
-              })}
 
-              <Grid item xs={12} sm={6}>
-                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+ 
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4 ' }}> {/* Gray background */}
+      <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
+        <Typography variant="h4" gutterBottom>
+          </Typography>
+ 
+       
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',  // Ensure content is stacked vertically
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+      }}
+    >
+     <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+
+ }}>
+      <Box sx={{ flex: 1, padding: 3, color: 'A2D5AB'}}>
+        <Typography variant="h4" gutterBottom color="A0AEC0">
+ 
+          Welcome, {userData.name}
+        </Typography>
+        <Grid container spacing={3}>
+          {/* Cards for Monthly, Daily, Yearly Data */}
+          {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
+            const data =
+              idx === 0
+                ? `${userData.monthlyData} units`  // Monthly data in units
+                : idx === 1
+                ? `${userData.dailyData} hours`  // Daily data in hours
+                : `${userData.yearlyData} units`; // Yearly data in units
+
+                const colors = [
+                  '#fff9c4', 
+                  '#b9f6ca', 
+                  '#ffe0b2',
+                ];
+        
+            return (
+              <Grid item xs={12} sm={4} key={idx}>
+                <Card sx={{ height: '100%', backgroundColor: colors[idx], borderRadius: '8px', boxShadow: 3 }}> {/* Light gray for cards */}
+
                   <CardContent>
                     <Typography variant="h6" gutterBottom color="#A0AEC0">
                       Data Distribution
@@ -546,6 +545,7 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
         </Box>
       </Box>
     </Box>
+
   );
 };
 

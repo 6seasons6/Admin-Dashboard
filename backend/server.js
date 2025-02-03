@@ -14,7 +14,6 @@ require('dotenv').config();
 const app = express();
 //const TodoPlanner = require('./models/TodoPlanner'); 
  
- 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());

@@ -271,6 +271,11 @@ const DashboardApp = () => {
                     : idx === 1
                     ? `${usageData.daily} hours`
                     : `${usageData.yearly} hours`;
+                const colors = [
+                  '#fff9c4', 
+                  '#b9f6ca', 
+                  '#ffe0b2',
+                ];
                 return (
                   <Grid item xs={12} sm={4} key={idx}>
                     <Card sx={{ height: '100%', backgroundColor: colors[idx], borderRadius: '8px', boxShadow: 3  }}>

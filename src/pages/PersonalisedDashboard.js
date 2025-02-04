@@ -24,6 +24,7 @@ import {
 } from '@mui/material';
 import '../components/Sidebar';
 
+import { Description } from '@mui/icons-material';
 // Register all necessary components for charts
 Chart.register(...registerables);
 

@@ -245,7 +245,7 @@ const DashboardApp = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4 ' }}>
+     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4 ' }}>
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom></Typography>
         <Box

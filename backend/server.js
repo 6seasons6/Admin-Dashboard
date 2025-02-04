@@ -566,6 +566,106 @@ app.get('/api/search', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+//adding products
+app.post('/api/products', async (req, res) => {
+  const { name, price, category, stock } = req.body;
+
+  // Validate input
+  if (!name || !price || !category || stock === undefined) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized: No token provided" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id;
+
+  try {
+    const newProduct = new Product({ name, price, category, stock ,userId});
+    await newProduct.save();
+    res.status(201).json({ message: 'Product added successfully', data: newProduct });
+  } catch (error) {
+    res.status(500).json({ message: 'Error adding product', error });
+  }
+});
+
+app.get('/api/products', async (req, res) => {
+  try {
+      const products = await Product.find({ userId: { $exists: true } });  // Assuming Mongoose
+      res.json(products);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update Product (Edit Product)
+app.put("/api/products/:id", async (req, res) => {
+  try {
+      const { id } = req.params;
+      const { name, price, category, stock } = req.body;
+
+      // Find the product by ID and update
+      const updatedProduct = await Product.findByIdAndUpdate(
+          id,
+          { name, price, category, stock },
+          { new: true, runValidators: true } // Return updated document
+      );
+
+      if (!updatedProduct) {
+          return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.status(200).json(updatedProduct);
+  } catch (error) {
+      res.status(500).json({ message: "Error updating product", error: error.message });
+  }
+});
+
+// Delete a product
+app.delete('/api/products/:id', async (req, res) => {
+  const { id } = req.params;
+  const token = req.headers.authorization?.split(" ")[1]; // Extract Bearer token
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  try {
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id; 
+
+    // Find the product by ID
+    const product = await Product.findById(id);
+    console.log("Fetched Product:", product); // Debugging log
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Ensure product.userId exists before calling toString()
+    if (!product.userId) {
+      return res.status(500).json({ message: "Product data error: userId missing" });
+    }
+
+    if (product.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Forbidden: Not authorized to delete this product" });
+    }
+
+    await product.deleteOne();
+    res.status(200).json({ message: "Product deleted successfully" });
+
+  } catch (err) {
+    console.error("Error verifying token:", err.message);
+    return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
+  }
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

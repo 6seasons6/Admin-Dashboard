@@ -91,7 +91,13 @@ const Navbar = () => {
   };
  
   return (
-    <nav className="navbar">
+    <nav className="navbar"
+    style={{
+      backgroundColor: "#b2dfdb", 
+      padding: "10px 20px", 
+    }} >
+  
+    
       {location.pathname === "/dashboard" && (
         <div className="dashboard-links">
           <div className="navbar-links">
@@ -121,6 +127,7 @@ const Navbar = () => {
                 "& .MuiOutlinedInput-root": {
                   border: "none",
                   width: "10rem",
+                  background:"",
                   "&:hover fieldset": { border: "none" },
                   "&.Mui-focused fieldset": { border: "none" },
                 },

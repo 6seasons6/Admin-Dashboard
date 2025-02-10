@@ -1,17 +1,23 @@
+
+require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
+const axios = require('axios');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const usageRoutes = require('./routes/usageRoute');
 const Usage=require('./models/Usage');
+const { OAuth2Client } = require('google-auth-library');
 
 const Product = require('./models/Product');
 
 require('dotenv').config();
 const app = express();
+const client = new OAuth2Client('381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com'); 
+
 //const TodoPlanner = require('./models/TodoPlanner'); 
  
 // Middleware
@@ -24,7 +30,15 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+app.use((req, res, next) => {
+  res.header('Cross-Origin-Opener-Policy', 'same-origin'); // Add this header
+  res.header('Cross-Origin-Embedder-Policy', 'require-corp'); // Add this header
+  next();
+});
 app.use('/api', usageRoutes);
+app.get('/api/socialmedia', (req, res) => {
+  res.json({ message: "Social media data retrieved successfully" });
+});
  
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -374,6 +388,56 @@ console.log('Database user:', user);
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.post('/api/google-login', async (req, res) => {
+  const { googleToken } = req.body;
+
+  if (!googleToken) {
+    return res.status(400).json({ message: 'Google token is required' });
+  }
+
+  try {
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: '381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com', // Replace with your Google client ID
+    });
+
+    const payload = ticket.getPayload();
+    const userId = payload['sub']; // Google user ID
+
+    // You can store or use additional user information as needed, such as email
+    console.log('Verified Google user:', payload);
+
+    // Create a JWT for your app (your backend token)
+    const appToken = jwt.sign(
+      { userId, email: payload.email }, // Add any other user data if needed
+      'Admin_dashboard_secret_key', // Your app's secret key
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token: appToken }); // Send the JWT to the frontend
+  } catch (error) {
+    console.error('Error verifying Google token:', error);
+    res.status(403).json({ message: 'Google login failed. Invalid token.' });
+  }
+});
+
+
+app.get('/EditProfile', async (req, res) => {
+  try {
+    const user = await User.findOne();  // Query the 'users' collection for a single document
+    console.log('Fetched User:', user);  // Log the fetched user data for debugging
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);  // Return the user data as a JSON response
+  } catch (err) {
+    console.log('Error fetching user data:', err);  // Log any errors
+    res.status(500).json({ message: 'Error fetching user data' });
+  }
+});
  
 //calculatinguse screen time based on the use of website
 async function trackUsage(userId, sessionDuration) {
@@ -535,7 +599,7 @@ app.post('/login', async (req, res) => {
 
     // Check if user is the specific one with 'info@6seasonsorganic.com'
     if (email === 'info@6seasonsorganic.com') {
-      const token = jwt.sign({ userId: user._id }, 'your_secret_key', { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user._id }, 'Admin_dashboard_secret_key', { expiresIn: '1h' });
       return res.json({ token, access: 'granted' });
     } else {
       return res.json({ access: 'denied' });
@@ -566,6 +630,113 @@ app.get('/api/search', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+app.get('/api/social-metrics', async (req, res) => {
+  try {
+    const socialMetrics = await getSocialMediaData();
+
+    res.json(socialMetrics);
+  } catch (error) {
+    console.error('Error fetching social media data:', error);
+    res.status(500).send('Error fetching data');
+  }
+});
+
+
+// Function to fetch data from different social media APIs
+async function getSocialMediaData() {
+  const youtubeData = await getYouTubeData();
+  const facebookData = await getFacebookData();
+  const twitterData = await getTwitterData();
+  const linkedinData = await getLinkedInData();
+  const instagramData = await getInstagramData();
+
+  return {
+    youtube: youtubeData,
+    facebook: facebookData,
+    twitter: twitterData,
+    linkedin: linkedinData,
+    instagram: instagramData
+  };
+}
+
+async function getYouTubeData() {
+  // Example: Replace with actual YouTube API logic
+  const response = await axios.get('https://www.googleapis.com/youtube/v3/channels', {
+    params: {
+      part: 'statistics',
+      id: 'YOUR_CHANNEL_ID',
+      key: process.env.YOUTUBE_API_KEY
+    }
+  });
+
+  const data = response.data.items[0].statistics;
+
+  return {
+    followers: data.subscriberCount,
+    views: data.viewCount
+  };
+}
+
+async function getFacebookData() {
+  // Example: Replace with actual Facebook Graph API logic
+  const response = await axios.get('https://graph.facebook.com/v13.0/YOUR_PAGE_ID', {
+    params: {
+      fields: 'followers_count,fan_count',
+      access_token: process.env.FACEBOOK_ACCESS_TOKEN
+    }
+  });
+
+  return {
+    followers: response.data.followers_count,
+    reach: response.data.fan_count
+  };
+}
+
+async function getTwitterData() {
+  // Example: Replace with actual Twitter API logic
+  const response = await axios.get('https://api.twitter.com/2/users/by/username/YOUR_USERNAME', {
+    headers: {
+      'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`
+    }
+  });
+
+  return {
+    followers: response.data.data.public_metrics.followers_count,
+    engagement: 0  // Placeholder as you would need to implement engagement logic based on Twitter data
+  };
+}
+
+async function getLinkedInData() {
+  // Example: Replace with actual LinkedIn API logic
+  const response = await axios.get('https://api.linkedin.com/v2/me', {
+    headers: {
+      'Authorization': `Bearer ${process.env.LINKEDIN_ACCESS_TOKEN}`
+    }
+  });
+
+  return {
+    followers: response.data.id,  // Placeholder for real follower count
+    clicks: 0,  // Placeholder as you would need to fetch real click data
+    shares: 0   // Placeholder for shares
+  };
+}
+
+async function getInstagramData() {
+  // Example: Replace with actual Instagram API logic
+  const response = await axios.get('https://graph.instagram.com/me', {
+    params: {
+      fields: 'followers_count,media_count',
+      access_token: process.env.INSTAGRAM_ACCESS_TOKEN
+    }
+  });
+
+  return {
+    followers: response.data.followers_count,
+    posts: response.data.media_count
+  };
+}
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

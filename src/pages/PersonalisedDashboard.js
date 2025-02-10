@@ -254,7 +254,7 @@ const DashboardApp = () => {
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100vh',
-            background: 'background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+            background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
           }}
         >
          <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
@@ -447,7 +447,7 @@ const DashboardApp = () => {
             </Box>
           </Modal>
 
-          {/* Sales Analytics Sidebar or Below Section */}
+          {/* Sales Analytics */}
           <Box sx={{ display: 'flex', flexDirection: 'row', padding: 3 }}>
             {/* If you want a sidebar layout */}
             <Box sx={{ flex: 3, paddingRight: 3 }}>
@@ -464,6 +464,7 @@ const DashboardApp = () => {
           </Box>
         </Box>
       </Box>
+    </Box>
     </Box>
   );
 };

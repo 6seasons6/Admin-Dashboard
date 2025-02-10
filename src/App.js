@@ -30,6 +30,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
 import Profile from './pages/Profile';
 import { useState } from "react";
+import SocialmediaApp from './pages/Socialmedia';
+import EditProfile from './pages/EditProfile';
 
 
 const Layout = ({ children }) => {
@@ -81,8 +83,7 @@ const App = () => {
                             <TodoPlanner />
                         </ProtectedRoute>
                     } />
-
-=========
+                    <Route path="/socialmedia" element={<SocialmediaApp/>} />
 
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
 
@@ -118,6 +119,7 @@ const App = () => {
                 <Route path="/settingpage" element={<SettignPage />} />
                 <Route path="/supportpage" element={<SupportPage />} />
                 <Route path="/Profile" element={<Profile />} />
+                <Route path="/EditProfile" element={<EditProfile/>} />
 
               </Routes>
               </Layout>

@@ -21,7 +21,6 @@ function TodoPlanner() {
   useEffect(() => {
     axios.get('http://localhost:5000/tasks')
       .then(response => {
-        console.log('Fetched tasks:', response.data);  // Log to verify task data
         setTasks(response.data);
       })
       .catch(error => {
@@ -99,21 +98,17 @@ function TodoPlanner() {
   
     axios.post('http://localhost:5000/tasks', newTask)
       .then(response => {
-        // Update state with the new task
         setTasks([...tasks, response.data]);
         setNewTask({ title: '', description: '', date: '', status: 'not viewed', completed: false });
       })
       .catch(error => {
         if (error.response) {
-          // Server responded with an error
           console.error('Error response:', error.response.data);
           alert('Failed to add task: ' + error.response.data.message);
         } else if (error.request) {
-          // No response received from the server
           console.error('Error request:', error.request);
           alert('Failed to reach the server. Please try again later.');
         } else {
-          // Other errors
           console.error('General error:', error.message);
           alert('An error occurred while adding the task.');
         }
@@ -145,45 +140,50 @@ function TodoPlanner() {
     <div className="todo-planner-container">
       <h2>To-Do Planner</h2>
 
-      {/* Add Task Form */}
-      <div className="form-container">
-        <h3>Add Task</h3>
-        <form onSubmit={handleAddTask} className="task-form">
-          <input
-            className="inputBox"
-            type="text"
-            name="title"
-            placeholder="Task Title"
-            value={newTask.title}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            className="inputBox"
-            type="date"
-            name="date"
-            value={newTask.date}
-            onChange={handleInputChange}
-            required
-          />
-          <button className="submit-btn" type="submit">Add Task</button>
-        </form>
+      {/* Left Side: Add Task Form and Calendar */}
+      <div className="left-side">
+        {/* Add Task Form */}
+        <div className="form-container">
+          <h3>Add Task</h3>
+          <form onSubmit={handleAddTask} className="task-form">
+            <input
+              className="inputBox"
+              type="text"
+              name="title"
+              placeholder="Task Title"
+              value={newTask.title}
+              onChange={handleInputChange}
+              required
+            />
+            <input
+              className="inputBox"
+              type="date"
+              name="date"
+              value={newTask.date}
+              onChange={handleInputChange}
+              required
+            />
+           <div className="submit-btn-container">
+              <button className="submit-btn" type="submit" onClick={handleAddTask}>Add Task</button>
+            </div>
+          </form>
+        </div>
+
+        {/* Calendar */}
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 500 }}
+          onSelectEvent={handleSelectEvent}
+          eventPropGetter={getEventStyle}
+          selectable
+        />
       </div>
 
-      {/* Calendar */}
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={getEventStyle}
-        selectable
-      />
-
-      {/* Task List with Checkboxes */}
-      <div className="task-list">
+      {/* Right Side: Task List */}
+      <div className="right-side">
         <h3>Tasks</h3>
         {sortedTasks.map(task => (
           <div key={task._id} className="task-item">
@@ -196,7 +196,7 @@ function TodoPlanner() {
             <span className={task.completed ? 'done' : 'pending'}>
               {task.completed ? 'Done' : 'Pending'}
             </span>
-            <span className='spaceAdd'>{moment(task.date).format(' YYYY-MM-DD ' )}</span> 
+            <span className='spaceAdd'>{moment(task.date).format('DD-MM')}</span> 
           </div>
         ))}
       </div>

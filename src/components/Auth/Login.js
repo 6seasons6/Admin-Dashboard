@@ -3,11 +3,9 @@ import { TextField, Button, Box, Card, CardContent, Typography, Link } from '@mu
 import { login } from '../../services/api'; // Replace with your API call
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import loginpic from '../../images/loginpic.jpg';
-
-
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -20,31 +18,45 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const data = await login(email, password); // Call API
+      const data = await login(email, password); // Call API for email/password login
       setAuthData({ token: data.token, user: data.user });
       localStorage.setItem('authToken', data.token); // Save token locally
-      navigate('/dashboard');
-      // Redirect to dashboard
+      navigate('/dashboard'); // Redirect to dashboard
     } catch (error) {
       setErrorMessage('Invalid email or password');
     }
+  };
 
-    login(email, password).then((data) => {
-      setAuthData(data);
-      navigate('/dashboard');
+  // Google login success handler
+  const handleLoginSuccess = async (response) => {
+    try {
+      console.log(response); // Google login response
+      const googleToken = response.credential;
       
-    });
-
+      // Send the Google token to the backend for validation
+      const backendResponse = await axios.post("http://localhost:5000/api/google-login", {
+        googleToken,
+      });
+  
+      if (backendResponse.data.token) {
+        localStorage.setItem('authToken', backendResponse.data.token); // Save your app's JWT token
+        navigate('/dashboard'); // Redirect to the dashboard after successful login
+      } else {
+        setErrorMessage('Google login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error("Google login failed", error);
+      setErrorMessage('Google login failed. Please try again.');
+    }
   };
-  const handleLoginSuccess = (response) => {
-    console.log(response);
-localStorage.setItem('googleAuthToken', response.credential);
-    navigate('/dashboard');
-  };
+  
 
+  // Google login failure handler
   const handleLoginFailure = (error) => {
     console.error("Login failed", error);
+    setErrorMessage('Google login failed. Please try again.');
   };
+
   return (
     <Box
       sx={{
@@ -55,7 +67,6 @@ localStorage.setItem('googleAuthToken', response.credential);
         minHeight: '100vh',
         backgroundColor: '#282c34',
         backgroundImage: `url(${loginpic})`,
-        
       }}
     >
       <Card sx={{ width: 400, padding: 3, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)' }}>
@@ -100,17 +111,21 @@ localStorage.setItem('googleAuthToken', response.credential);
             <Button variant="contained" type="submit" color="primary" sx={{ width: '100%' }}>
               Login
             </Button>
+
+            {/* Google login button */}
             <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com">
-      <div style={{ textAlign: 'center', marginTop: '50px',marginBottom:'10px' }}>
-        <GoogleLogin
-          onSuccess={handleLoginSuccess}
-          onError={handleLoginFailure}
-        />
-      </div>
-    </GoogleOAuthProvider>
+              <div style={{ textAlign: 'center', marginTop: '50px', marginBottom: '10px' }}>
+                <GoogleLogin
+                  onSuccess={handleLoginSuccess}
+                  onError={handleLoginFailure}
+                  cookiePolicy="single_host_origin"
+                />
+              </div>
+            </GoogleOAuthProvider>
           </Box>
         </CardContent>
       </Card>
+
       <Typography variant="body2" sx={{ marginTop: 2, color: 'white' }}>
         Don't have an account?{' '}
         <Link href="/register" color="secondary" underline="hover">

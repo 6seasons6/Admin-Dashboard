@@ -266,7 +266,12 @@ body {
   top:0;
   left: 0;
 }
-
+@media screen and (max-width: 480px) {
+  .logo1 img{
+    width: 40px;
+    height: 40px;
+  }
+}
 
 
 

@@ -26,6 +26,8 @@ const Sidebar = () => {
           <li><Link to="/reports"><SiGoogleanalytics className='icons'/> <span className='d-none d-sm-inline'> Analytics</span> </Link></li>
           <li><Link to="/"><FaCalendar  className='icons'/> <span className='d-none d-sm-inline'> Calendar</span> </Link></li>
           <li><Link to="/analytics"><FaChartLine className='icons'/> <span className='d-none d-sm-inline'> Reports</span> </Link></li>
+          <li><Link to="/analytics"><FaChartLine className='icons'/> <span className='d-none d-sm-inline'> Product Reports</span> </Link></li>
+
           <li><Link to="/"><IoSettings className="icons" /> <span className="d-none d-sm-inline"> Settings</span></Link></li>
 
           {/* Conditionally render TodoPlanner link based on user email */}

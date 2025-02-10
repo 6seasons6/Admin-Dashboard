@@ -28,6 +28,8 @@ import SupportPage from './pages/Supportpage';
 import TodoPlanner from './pages/TodoPlanner';
 import ProtectedRoute from "./components/ProtectedRoute";
 import SalesAnalytics from "./components/Analytics/SalesAnalytics";
+import ProductReports from './components/Analytics/ProductReports';
+import ProductInfo from './pages/ProductInfo';
 import Profile from './pages/Profile';
 import { useState } from "react";
 
@@ -39,8 +41,6 @@ const Layout = ({ children }) => {
   
   const hiddenPaths=["/","/login","/register","/forgot-password"];
   
-  
- 
   return (
 <div className="app" style={{ display: "flex" }}>
       {!hiddenPaths.includes(location.pathname) && <Sidebar />} {/* Sidebar appears on all pages except `/` */}
@@ -55,7 +55,6 @@ const Layout = ({ children }) => {
 
 
 const App = () => {
-  
   return (
     
     <AuthProvider>
@@ -66,7 +65,7 @@ const App = () => {
                 {/* Main Routes */}
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
-
+                
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
 
@@ -81,8 +80,8 @@ const App = () => {
                             <TodoPlanner />
                         </ProtectedRoute>
                     } />
+                <Route path="/productinfo" element={<ProductInfo />} />
 
-=========
 
                 <Route path="/dashboard" element={<PersonalisedDashboard />} />
 
@@ -95,12 +94,12 @@ const App = () => {
 
                 <Route path="/products" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
-
-
+                
                 {/* Analytics Routes */}
                 <Route path="/analytics/sales" element={<SalesReport />} />
                 <Route path="/analytics/activity" element={<UserActivity />} />
                 <Route path="/analytics" element={<SalesAnalytics />} />
+                <Route path="/product-reports" element={<ProductReports />} />
 
                 {/* Authentication Routes */}
                 <Route path="/login" element={<Login />} />

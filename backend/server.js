@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const usageRoutes = require('./routes/usageRoute');
 const Usage=require('./models/Usage');
-
 const Product = require('./models/Product');
 
 require('dotenv').config();
@@ -596,7 +595,8 @@ app.post('/api/products', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
-      const products = await Product.find({ userId: { $exists: true } });  // Assuming Mongoose
+      //const products = await Product.find({ userId: { $exists: true } });  // Assuming Mongoose
+      const products = await Product.find().populate('userId', 'username');
       res.json(products);
   } catch (error) {
       res.status(500).json({ message: 'Server error' });
@@ -665,6 +665,19 @@ app.delete('/api/products/:id', async (req, res) => {
     return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
   }
 });
+
+// app.get('/products', async (req, res) => {
+//   try {
+//     const products = await Product.find().populate('userId', 'username'); 
+//     // This will replace userId with an object containing { _id, username }
+//     console.log("Fetched Products:", products); // Debugging output
+//     res.json(products);
+//   } catch (error) {
+//     console.error("Error fetching products:", error);
+//     res.status(500).json({ message: 'Error fetching products' });
+//   }
+// });
+
 
 // Start Server
 const PORT = process.env.PORT || 5000;

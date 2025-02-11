@@ -19,6 +19,41 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', usageRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
+
+wss.on('connection', (ws) => {
+    console.log('Client connected');
+    
+    // Simulate checking for low-stock products and sending a notification
+    setInterval(() => {
+        const lowStockProducts = checkLowStock(); // Function to check stock in DB
+        if (lowStockProducts.length > 0) {
+            ws.send(JSON.stringify({ type: 'LOW_STOCK_ALERT', products: lowStockProducts }));
+        }
+    }, 10000); // Check every 10 seconds
+
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
+});
+ 
+// Assuming you have a WebSocket setup in your backend
+;
+const checkLowStock = async () => {
+  try {
+    // Fetch all products from the database
+    const products = await Product.find({ stock: { $lte: 5 } }); // Low stock = 5 or below
+
+    if (products.length > 0) {
+      // Send only if there are low-stock products
+      socket.emit("lowStockAlert", { type: "LOW_STOCK_ALERT", products });
+    }
+  } catch (err) {
+    console.error("Error fetching products:", err);
+  }
+};
+
 app.use(cors({
   origin: 'http://localhost:3000', // Adjust this to your frontend's URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],

@@ -18,19 +18,18 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import { FaUserCircle } from "react-icons/fa";
- 
-const Navbar = () => {
+
+const Navbar = ({ setSearchQuery }) => {
   const { authData, logout } = useAuth();
   const [userData, setUserData] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]); // State for storing search results
-  const [notifications] = useState(0);
-  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [notifications, setNotifications] = useState(0);
+  const [lowStockProducts, setLowStockProducts] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [notificationAnchor, setNotificationAnchor] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
- 
-  // Fetch user data when authData changes or on route change
+
+  // Fetch User Data
   useEffect(() => {
     const fetchUserData = async () => {
       if (!authData?.token) {
@@ -49,24 +48,74 @@ const Navbar = () => {
     };
     fetchUserData();
   }, [authData, location.pathname]);
- 
-  // Update time every second
+
+  // Fetch Products to Identify Low Stock (Runs Once on Mount)
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentDateTime(new Date().toLocaleString());
-    }, 1000);
-    return () => clearInterval(interval);
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/products", {
+          headers: { Authorization: `Bearer ${authData?.token}` },
+        });
+
+        if (response.data && Array.isArray(response.data)) {
+          const lowStockItems = response.data.filter((product) => product.stock <= 5);
+          setNotifications(lowStockItems.length);
+          setLowStockProducts(lowStockItems);
+          console.log("Initial Low stock products:", lowStockItems);
+        }
+      } catch (err) {
+        console.error("Failed to load products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []); // Runs only on component mount
+
+  // WebSocket Connection (Only Updates Notification Count)
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8080");
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === "LOW_STOCK_ALERT") {
+        setNotifications(data.products.length); // Updates only the notification count
+        console.log("Low stock count updated:", data.products.length);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    return () => {
+      ws.close();
+    };
   }, []);
- 
-  // Handle menu open/close
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
- 
-  // Handle user logout
+
+  const handleNotificationClick = (event) => {
+    setNotificationAnchor(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchor(null);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     logout();
@@ -74,22 +123,7 @@ const Navbar = () => {
     handleMenuClose();
     navigate("/login");
   };
- 
-  // Handle search functionality
-  const handleSearch = async () => {
-    if (searchQuery.trim()) {
-      try {
-        // Use searchQuery (not search) in the Axios call
-        const response = await axios.get(`http://localhost:3000/api/search?q=${searchQuery}`);
-        setSearchResults(response.data); // Store the search results in state
-      } catch (error) {
-        console.error("Error searching products:", error);
-      }
-    } else {
-      setSearchResults([]); // Clear search results if query is empty
-    }
-  };
- 
+
   return (
     <nav className="navbar">
       {location.pathname === "/dashboard" && (
@@ -105,95 +139,56 @@ const Navbar = () => {
               variant="outlined"
               placeholder="Search..."
               size="small"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)} // Update query as the user types
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch(); // Trigger search on "Enter"
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon />
+                    <SearchIcon sx={{ color: "black" }} />
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  border: "none",
-                  width: "10rem",
-                  "&:hover fieldset": { border: "none" },
-                  "&.Mui-focused fieldset": { border: "none" },
-                },
-              }}
             />
           </div>
- 
-          {/* Display search results if any */}
-          {searchResults.length > 0 && (
-            <div className="search-results">
-              <Typography variant="h6">Search Results:</Typography>
+
+          {/* Notifications Icon */}
+          <IconButton onClick={handleNotificationClick} disableRipple>
+            <Badge badgeContent={notifications} color="error">
+              <NotificationsIcon sx={{ color: "black",marginLeft:"5.5rem" }} />
+            </Badge>
+          </IconButton>
+
+          {/* Notifications Dropdown Menu */}
+          <Menu anchorEl={notificationAnchor} open={Boolean(notificationAnchor)} onClose={handleNotificationClose}>
+            {lowStockProducts.length > 0 ? (
               <List>
-                {searchResults.map((result, index) => (
-                  <ListItem key={index} style={{ color: "yellow" }}>
-                    {result.name} {/* Display product name */}
+                {lowStockProducts.map((product, index) => (
+                  <ListItem key={index}>
+                    <Typography variant="body2" color="error">
+                      ⚠ {product.name} - Only {product.stock} left!
+                    </Typography>
                   </ListItem>
                 ))}
               </List>
-            </div>
-          )}
- 
- <IconButton
-  color="inherit"
-  disableRipple
-  sx={{
-    marginLeft: "10px",
-    "&:hover": { boxShadow: "none" },
-    "&:focus": { boxShadow: "none" },
-  }}
->
-  <Badge
-    badgeContent={notifications}
-    color="error"
-    sx={{
-      // This targets the inner badge element
-      "& .MuiBadge-badge": {
-        boxShadow: "none",
-      },
-    }}
-  >
-    <NotificationsIcon
-      sx={{ color: "black", marginLeft: "12rem" }}
-    />
-  </Badge>
-</IconButton>
-
+            ) : (
+              <MenuItem onClick={handleNotificationClose}>No alerts</MenuItem>
+            )}
+          </Menu>
         </div>
       )}
+
       {location.pathname !== "/dashboard" && (
         <Typography variant="h6" className="navbar-title">
           Admin Panel
         </Typography>
       )}
- 
-      {/* User Dropdown */}
+
+      {/* User Profile Menu */}
       <div
         className="user-icon"
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          boxShadow: "none",
-          marginRight: "3rem",
-        }}
+        style={{ display: "flex", alignItems: "center", gap: "8px", marginRight: "3rem" }}
       >
-        <Box
-          display="flex"
-          alignItems="center"
-          sx={{ cursor: "pointer" }}
-          onClick={handleMenuOpen}
-        >
-          <FaUserCircle style={{ color: "black", marginRight: "8px" }} size={32} />
+        <Box display="flex" alignItems="center" sx={{ cursor: "pointer" }} onClick={handleMenuOpen}>
+          <FaUserCircle style={{ color: "black", marginRight: "8px", boxShadow: "none" }} size={32} />
           {userData && (
             <Typography variant="subtitle1" sx={{ fontWeight: "bold", color: "green" }}>
               {userData.name}
@@ -202,24 +197,26 @@ const Navbar = () => {
         </Box>
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
           {!userData ? (
-            <MenuItem onClick={() => navigate("/login")}>Login</MenuItem>
+            <MenuItem onClick={() => navigate("/login")} sx={{ color: "blue" }}>
+              Login
+            </MenuItem>
           ) : (
-            [
-              <MenuItem key="settings" onClick={() => navigate("/settingpage")}>
+            <>
+              <MenuItem onClick={() => navigate("/settingpage")} sx={{ color: "blue", "&:hover": { backgroundColor: "#cfcfe5" } }}>
                 Settings
-              </MenuItem>,
-              <MenuItem key="editProfile" onClick={() => navigate("/Profile")}>
+              </MenuItem>
+              <MenuItem onClick={() => navigate("/Profile")} sx={{ color: "blue", "&:hover": { backgroundColor: "#cfcfe5" } }}>
                 Edit Profile
-              </MenuItem>,
-              <MenuItem key="logout" onClick={handleLogout}>
+              </MenuItem>
+              <MenuItem onClick={handleLogout} sx={{ color: "blue", "&:hover": { backgroundColor: "#cfcfe5" } }}>
                 Logout
-              </MenuItem>,
-            ]
+              </MenuItem>
+            </>
           )}
         </Menu>
       </div>
     </nav>
   );
 };
- 
+
 export default Navbar;

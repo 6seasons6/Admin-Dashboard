@@ -26,6 +26,7 @@ import MuiAlert from '@mui/material/Alert';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Import the check circle 
 import '../components/Sidebar';
 
+import { Description } from '@mui/icons-material';
 // Register all necessary components for charts
 Chart.register(...registerables);
 
@@ -306,6 +307,12 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4' }}>
+
+
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4' }}>
+
+
+
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom></Typography>
         <Box
@@ -316,9 +323,16 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
             background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
           }}
         >
+
           <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)' }}>
             <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
               <Typography variant="h4" gutterBottom color="black">
+
+
+          <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)' }}>
+            <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
+              <Typography variant="h4" gutterBottom color="#A0AEC0">
+
                 Welcome, {userData.name}
               </Typography>
               <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} >
@@ -336,9 +350,15 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                       ? `${usageData.daily} hours`
                       : `${usageData.yearly} hours`;
                       const colors = [
+
                         '#e6ee9c', 
                         '#dcedc8', 
                         '#c5e1a5',
+
+                        '#fff9c4', 
+                        '#b9f6ca', 
+                        '#ffe0b2',
+
                       ];
                   return (
                     <Grid item xs={12} sm={4} key={idx}>
@@ -368,6 +388,60 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                     </CardContent>
                   </Card>
                 </Grid>
+ 
+
+
+         <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+
+ }}>
+          <Box sx={{ flex: 1, padding: 3, color: 'A2D5AB' }}>
+            <Typography variant="h4" gutterBottom color="A0AEC0">
+              Welcome, {userData.name}
+            </Typography>
+            <Grid container spacing={3}>
+              {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
+                const data =
+                  idx === 0
+                    ? `${usageData.monthly} hours`
+                    : idx === 1
+                    ? `${usageData.daily} hours`
+                    : `${usageData.yearly} hours`;
+                const colors = [
+                  '#fff9c4', 
+                  '#b9f6ca', 
+                  '#ffe0b2',
+                ];
+                return (
+                  <Grid item xs={12} sm={4} key={idx}>
+                    <Card sx={{ height: '100%', backgroundColor: colors[idx], borderRadius: '8px', boxShadow: 3  }}>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom color="#A0AEC0">
+                          {label}
+                        </Typography>
+                        <Typography variant="h4" color="#2D3748">
+                          {data}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+
+              <Grid item xs={12} sm={6}>
+                <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom color="#A0AEC0">
+                      Data Distribution
+                    </Typography>
+                    <Box sx={{ height: 250 }}>
+                      <Doughnut data={doughnutData} options={graphOptions} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+
+              
+ 
 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
@@ -399,7 +473,11 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                   display: 'flex',
                   justifyContent: 'space-between',
                   marginTop: 2,
+ 
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'black' },
+
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' },
+ 
                 }}
               >
                 <TextField

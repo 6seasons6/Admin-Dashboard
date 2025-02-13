@@ -21,7 +21,7 @@ const Sidebar = () => {
       <nav>
         <ul className="listitems">
         <li><Link to="/"><FaHome className='icons'/> <span className='d-none d-sm-inline'> Dashboard</span> </Link></li>
-          <li><Link to="/"><FaProductHunt className="icons" /> <span className="d-none d-sm-inline"> Product Management</span></Link></li>
+          <li><Link to="/ProductTable"><FaProductHunt className="icons" /> <span className="d-none d-sm-inline"> Product Management</span></Link></li>
           <li><Link to="/users"><FaUsers className="icons" /> <span className="d-none d-sm-inline"> Users</span></Link></li>
           <li><Link to="/reports"><SiGoogleanalytics className='icons'/> <span className='d-none d-sm-inline'> Analytics</span> </Link></li>
           <li><Link to="/"><FaCalendar  className='icons'/> <span className='d-none d-sm-inline'> Calendar</span> </Link></li>

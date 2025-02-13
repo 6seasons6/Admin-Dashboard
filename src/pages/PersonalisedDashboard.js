@@ -306,8 +306,11 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
   const colors = ['#6FBF73', '#85D6F7', '#FF9F8C']; // Colors for the cards
 
   return (
+    <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4' }}>
+
 
     <Box sx={{ display: 'flex', minHeight: '100vh', background: '#bcaaa4' }}>
+
 
 
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
@@ -323,7 +326,13 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
 
           <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)' }}>
             <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
+              <Typography variant="h4" gutterBottom color="black">
+
+
+          <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)' }}>
+            <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
               <Typography variant="h4" gutterBottom color="#A0AEC0">
+
                 Welcome, {userData.name}
               </Typography>
               <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} >
@@ -341,9 +350,15 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                       ? `${usageData.daily} hours`
                       : `${usageData.yearly} hours`;
                       const colors = [
+
+                        '#e6ee9c', 
+                        '#dcedc8', 
+                        '#c5e1a5',
+
                         '#fff9c4', 
                         '#b9f6ca', 
                         '#ffe0b2',
+
                       ];
                   return (
                     <Grid item xs={12} sm={4} key={idx}>
@@ -373,7 +388,9 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                     </CardContent>
                   </Card>
                 </Grid>
-=======
+ 
+
+
          <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
 
  }}>
@@ -424,6 +441,7 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
               </Grid>
 
               
+ 
 
                 <Grid item xs={12} sm={6}>
                   <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
@@ -455,7 +473,11 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                   display: 'flex',
                   justifyContent: 'space-between',
                   marginTop: 2,
+ 
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'black' },
+
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' },
+ 
                 }}
               >
                 <TextField

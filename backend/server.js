@@ -8,7 +8,9 @@ const nodemailer = require('nodemailer');
 const usageRoutes = require('./routes/usageRoute');
 const Usage=require('./models/Usage');
 const Product = require('./models/Product');
-
+const Sale = require('./models/Sales');
+const Expense=require('./models/Expense');
+const Customer=require('./models/Customer');
 require('dotenv').config();
 const app = express();
 //const TodoPlanner = require('./models/TodoPlanner'); 
@@ -666,17 +668,175 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// app.get('/products', async (req, res) => {
-//   try {
-//     const products = await Product.find().populate('userId', 'username'); 
-//     // This will replace userId with an object containing { _id, username }
-//     console.log("Fetched Products:", products); // Debugging output
-//     res.json(products);
-//   } catch (error) {
-//     console.error("Error fetching products:", error);
-//     res.status(500).json({ message: 'Error fetching products' });
-//   }
-// });
+app.get('/api/sales', async (req, res) => {
+  try {
+    const sales = await Sale.find().populate('productId', 'name price');
+    console.log('API Request Received');
+    console.log('Sales Data:', sales);
+    res.json(sales);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching sales' });
+  }
+});
+
+
+// Calculate total revenue and profit
+app.get('/api/sales/analytics', async (req, res) => {
+  try {
+    const sales = await Sale.find().populate('productId', 'name price');
+    
+    const totalRevenue = sales.reduce((acc, sale) => acc + sale.totalAmount, 0);
+    const totalProfit = sales.reduce((acc, sale) => {
+      const productPrice = sale.productId.price;
+      return acc + (productPrice * sale.quantity - sale.totalAmount);
+    }, 0);
+
+    res.json({ totalRevenue, totalProfit });
+  } catch (err) {
+    res.status(500).json({ message: 'Error calculating sales analytics' });
+  }
+});
+
+app.get('/api/sales/top-selling', async (req, res) => {
+  try {
+    const topSelling = await Sale.aggregate([
+      {
+        $group: {
+          _id: '$productId',
+          totalQuantity: { $sum: '$quantity' },
+          totalRevenue: { $sum: '$totalAmount' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productInfo',
+        },
+      },
+      {
+        $unwind: '$productInfo',
+      },
+      {
+        $project: {
+          productName: '$productInfo.name',
+          totalQuantity: 1,
+          totalRevenue: 1,
+        },
+      },
+      {
+        $sort: { totalQuantity: -1 }, // Sort by total quantity sold
+      },
+      {
+        $limit: 5, // Get top 5 products
+      },
+    ]);
+
+    res.json(topSelling);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching top-selling products' });
+  }
+});
+
+app.get('/api/sales/revenue-by-region', async (req, res) => {
+  try {
+    const revenueByRegion = await Sale.aggregate([
+      {
+        $group: {
+          _id: '$region', // Assuming you have a region field in your sales data
+          totalRevenue: { $sum: '$totalAmount' },
+        },
+      },
+    ]);
+
+    res.json(revenueByRegion);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching revenue by region' });
+  }
+});
+
+app.get('/api/expenses', async (req, res) => {
+  try {
+      const expenses = await Expense.find(); // Fetch all expenses
+      res.json(expenses);
+  } catch (err) {
+      console.error('Error fetching expenses:', err);
+      res.status(500).json({ message: 'Error fetching expenses' });
+  }
+});
+
+// Fetch customer demographics
+app.get('/api/customers/demographics', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    const ageGroups = { '18-24': 0, '25-34': 0, '35-44': 0, '45-54': 0, '55+': 0 };
+    const genderData = { Male: 0, Female: 0, Other: 0 };
+    const locationData = { Urban: 0, Rural: 0 };
+
+    customers.forEach(({ age, gender, locationType }) => {
+      if (age < 25) ageGroups['18-24']++;
+      else if (age < 35) ageGroups['25-34']++;
+      else if (age < 45) ageGroups['35-44']++;
+      else if (age < 55) ageGroups['45-54']++;
+      else ageGroups['55+']++;
+
+      if (gender) genderData[gender]++;
+      if (locationType) locationData[locationType]++;
+    });
+
+    res.json({ ageGroups, genderData, locationData });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching demographics' });
+  }
+});
+
+// Fetch churn rate
+app.get('/api/customers/churn', async (req, res) => {
+  try {
+    const activeCustomers = await Customer.countDocuments({ isActive: true });
+    const churnedCustomers = await Customer.countDocuments({ isActive: false });
+    res.json({ active: activeCustomers, churned: churnedCustomers });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching churn rate' });
+  }
+});
+
+// Fetch Customer Lifetime Value (CLV)
+app.get('/api/customers/clv', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    let totalRevenue = 0;
+    let totalCustomers = customers.length;
+
+    customers.forEach(customer => {
+      totalRevenue += customer.purchaseHistory.reduce((acc, purchase) => acc + purchase.amount, 0);
+    });
+
+    const clv = totalCustomers ? (totalRevenue / totalCustomers).toFixed(2) : 0;
+    res.json({ clv });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching CLV' });
+  }
+});
+
+// Fetch return/refund data
+app.get('/api/customers/returns', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    const returnReasons = { 'Product Defect': 0, 'Customer Changed Mind': 0, 'Wrong Size': 0 };
+
+    customers.forEach(({ returns }) => {
+      returns.forEach(({ reason, count }) => {
+        returnReasons[reason] = (returnReasons[reason] || 0) + count;
+      });
+    });
+
+    res.json(returnReasons);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching returns data' });
+  }
+});
 
 
 // Start Server

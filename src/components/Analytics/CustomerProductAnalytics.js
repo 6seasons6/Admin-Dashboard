@@ -1,139 +1,83 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
 import { Doughnut, Bar } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
-
-// Register all necessary components for charts
-Chart.register(...registerables);
+import axios from 'axios';
 
 const CustomerProductAnalytics = () => {
-  const customerDemographicsData = {
-    labels: ['18-24', '25-34', '35-44', '45-54', '55+'], // Age groups
-    datasets: [
-      {
-        label: 'Male',
-        data: [30, 40, 25, 15, 10],
-        backgroundColor: '#1E90FF', // Blue for Male
-      },
-      {
-        label: 'Female',
-        data: [25, 35, 30, 20, 10],
-        backgroundColor: '#FF1493', // Pink for Female
-      },
-      {
-        label: 'Other',
-        data: [5, 10, 5, 5, 2],
-        backgroundColor: '#FFD700', // Gold for Other
-      },
-      {
-        label: 'Urban',
-        data: [40, 50, 35, 25, 15],
-        backgroundColor: '#32CD32', // Green for Urban
-      },
-      {
-        label: 'Rural',
-        data: [15, 25, 15, 10, 5],
-        backgroundColor: '#FFA500', // Orange for Rural
-      },
-    ],
-  };
+  const [demographics, setDemographics] = useState(null);
+  const [churnRate, setChurnRate] = useState(null);
+  const [clv, setClv] = useState(null);
+  const [returnData, setReturnData] = useState(null);
 
-  const churnRateData = {
-    labels: ['Active', 'Churned'],
-    datasets: [
-      {
-        data: [80, 20],
-        backgroundColor: ['#FFA500', '#1E90FF'],
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const demoRes = await axios.get('http://localhost:5000/api/customers/demographics');
+        setDemographics(demoRes.data);
 
-  const clv = 1400; // Mock CLV value
+        const churnRes = await axios.get('http://localhost:5000/api/customers/churn');
+        setChurnRate(churnRes.data);
 
-  // Updated Return Data with product return reasons
-  const returnData = {
-    labels: ['Product Defect', 'Customer Changed Mind', 'Wrong Size'],
-    datasets: [
-      {
-        label: 'Return Rates',
-        data: [15, 8, 12], // Return rates for each reason
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'], // Colors for each category
-      },
-    ],
-  };
+        const clvRes = await axios.get('http://localhost:5000/api/customers/clv');
+        setClv(clvRes.data.clv);
+
+        const returnRes = await axios.get('http://localhost:5000/api/customers/returns');
+        setReturnData(returnRes.data);
+      } catch (error) {
+        console.error('Error fetching customer analytics:', error);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
+
+  if (!demographics || !churnRate || !returnData || clv === null) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Box sx={{ padding: 3 }}>
       <Grid container spacing={3}>
-        {/* Customer Demographics */}
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ height: '350px', borderRadius: '8px', boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="#4A5568" fontWeight="bold">
-                Customer Demographics
-              </Typography>
-              <Box sx={{ height: 250 }}>
-                <Bar data={customerDemographicsData} options={{ responsive: true, maintainAspectRatio: false }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Churn Rate */}
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ height: '350px', borderRadius: '8px', boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="#4A5568" fontWeight="bold">
-                Churn Rate
-              </Typography>
-              <Box sx={{ height: 250 }}>
-                <Doughnut data={churnRateData} options={{ responsive: true, maintainAspectRatio: false }} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Customer Lifetime Value (CLV) */}
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ height: '350px', borderRadius: '8px', boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="#4A5568" fontWeight="bold">
-                Customer Lifetime Value (CLV)
-              </Typography>
-              <Typography variant="h4" color="#2D3748" fontWeight="bold" sx={{ marginTop: 5 }}>
-                ${clv}
-              </Typography>
-              <Typography variant="body2" color="#718096" sx={{ marginTop: 2 }}>
-                The average revenue a customer contributes over their lifetime.
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Return/Refund Data */}
-        <Grid item xs={12} sm={6}>
-          <Card sx={{ height: '350px', borderRadius: '8px', boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="#4A5568" fontWeight="bold">
-                Return & Refund Analysis
-              </Typography>
-              <Box sx={{ height: 250 }}>
-                <Bar
-                  data={returnData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                      x: {
-                        barThickness: 30, // Decrease bar thickness
-                      },
-                    },
-                  }}
-                />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+        {[{
+          title: 'Customer Demographics',
+          component: <Bar data={{
+            labels: Object.keys(demographics.ageGroups),
+            datasets: [
+              { label: 'Male', data: Object.values(demographics.genderData), backgroundColor: '#1E90FF' },
+              { label: 'Female', data: Object.values(demographics.genderData), backgroundColor: '#FF1493' },
+              { label: 'Urban', data: Object.values(demographics.locationData), backgroundColor: '#32CD32' },
+              { label: 'Rural', data: Object.values(demographics.locationData), backgroundColor: '#FFA500' },
+            ],
+          }} />
+        }, {
+          title: 'Churn Rate',
+          component: <Doughnut data={{
+            labels: ['Active', 'Churned'],
+            datasets: [{ data: [churnRate.active, churnRate.churned], backgroundColor: ['#FFA500', '#1E90FF'] }],
+          }} />
+        }, {
+          title: 'Customer Lifetime Value (CLV)',
+          component: <Typography variant="h4">${clv}</Typography>
+        }, {
+          title: 'Return & Refund Analysis',
+          component: <Bar data={{
+            labels: Object.keys(returnData),
+            datasets: [{ data: Object.values(returnData), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'] }],
+          }} />
+        }].map((card, index) => (
+          <Grid item xs={12} sm={6} key={index}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" gutterBottom>
+                  {card.title}
+                </Typography>
+                <Box sx={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {card.component}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
     </Box>
   );

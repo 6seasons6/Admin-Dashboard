@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'; // Correctly import only `useAuth`
  
-import { FaHome, FaUsers, FaChartLine, FaProductHunt, FaCalendar ,FaCheckCircle } from 'react-icons/fa';
+import { FaHome, FaUsers, FaChartLine, FaProductHunt, FaCalendar ,FaCheckCircle ,FaBox } from 'react-icons/fa';
 import { SiGoogleanalytics } from 'react-icons/si';
 import { IoSettings } from 'react-icons/io5';
 import image from '../images/image.png'
@@ -30,7 +30,20 @@ const Sidebar = () => {
  
           {/* Conditionally render TodoPlanner link based on user email */}
           {authData.user?.email === "info@6seasonsorganic.com" && (
-            <li><Link to="/todoplanner"><FaCheckCircle  className="icons"/><span className="d-none d-sm-inline">TodoPlanner</span></Link></li>
+            <ul>
+            <li>
+              <Link to="/todoplanner">
+                <FaCheckCircle className="icons" />
+                <span className="d-none d-sm-inline">TodoPlanner</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/productinfo">
+                <FaBox className="icons" />
+                <span className="d-none d-sm-inline">Products Info</span>
+              </Link>
+            </li>
+          </ul>            
           )}
         </ul>
       </nav>

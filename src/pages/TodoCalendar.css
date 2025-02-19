@@ -1,0 +1,29 @@
+.todo-calendar-container {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .task-form {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .task-form input, .task-form button {
+    padding: 8px;
+    font-size: 16px;
+  }
+  
+  .task-form button {
+    background-color: blue;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .task-form button:hover {
+    background-color: darkblue;
+  }
+  

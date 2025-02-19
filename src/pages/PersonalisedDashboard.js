@@ -311,7 +311,7 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
 
 
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
-        <Typography variant="h4" gutterBottom></Typography>
+        <Typography variant="h4" gutterBottom></Typography></Box>
         <Box
           sx={{
             display: 'flex',
@@ -320,6 +320,7 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
             background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
           }}
         >
+          </Box>
 
           <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)' }}>
             <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
@@ -372,6 +373,7 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
                       </Box>
                     </CardContent>
                   </Card>
+                </Grid>
                 </Grid>
 =======
          <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
@@ -587,5 +589,5 @@ const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackba
     </Box>
   );
 };
+export default DashboardApp;
 
-export default DashboardApp;

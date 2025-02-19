@@ -19,7 +19,7 @@ function TodoPlanner() {
 
   // Fetch tasks from backend
   useEffect(() => {
-    axios.get('http://localhost:5000/tasks')
+    axios.get('http://localhost:5001/tasks')
       .then(response => {
         console.log('Fetched tasks:', response.data);  // Log to verify task data
         setTasks(response.data);
@@ -72,7 +72,7 @@ function TodoPlanner() {
     const newCompletionStatus = !event.completed;
   
     // Update the task completion status in the backend
-    axios.put(`http://localhost:5000/tasks/${taskId}`, { completed: newCompletionStatus })
+    axios.put(`http://localhost:5001/tasks/${taskId}`, { completed: newCompletionStatus })
       .then(response => {
         setTasks(tasks.map(task =>
           task._id === taskId ? { ...task, completed: newCompletionStatus } : task
@@ -97,7 +97,7 @@ function TodoPlanner() {
       return;
     }
   
-    axios.post('http://localhost:5000/tasks', newTask)
+    axios.post('http://localhost:5001/tasks', newTask)
       .then(response => {
         // Update state with the new task
         setTasks([...tasks, response.data]);
@@ -129,7 +129,7 @@ function TodoPlanner() {
     setTasks(updatedTasks); 
 
     const taskToUpdate = updatedTasks.find(task => task._id === taskId);
-    axios.put(`http://localhost:5000/tasks/${taskId}`, {
+    axios.put(`http://localhost:5001/tasks/${taskId}`, {
       completed: taskToUpdate.completed,
       status: taskToUpdate.completed ? 'viewed' : 'not viewed',
     })

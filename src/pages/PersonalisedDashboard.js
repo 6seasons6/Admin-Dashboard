@@ -51,7 +51,7 @@ const DashboardApp = ({searchQuery,setSearchQuery}) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/products', {
+      const response = await axios.get('http://localhost:5001/api/products', {
         headers: { Authorization: `Bearer ${authData.token}` },
       });
       setProducts(response.data);
@@ -83,7 +83,7 @@ const DashboardApp = ({searchQuery,setSearchQuery}) => {
           const timeSpent = (end - start) / 1000 / 60 / 60; // Convert ms to hours
           if (timeSpent > 0) {
             axios.post(
-              'http://localhost:5000/api/track-usage',
+              'http://localhost:5001/api/track-usage',
               {
                 userId,
                 sessionDuration: timeSpent,
@@ -103,7 +103,7 @@ const DashboardApp = ({searchQuery,setSearchQuery}) => {
             return;
           }
           try {
-            const response = await axios.get(`http://localhost:5000/api/usage?userId=${userId}`, {
+            const response = await axios.get(`http://localhost:5001/api/usage?userId=${userId}`, {
               headers: { Authorization: `Bearer ${authData.token}` },
             });
             const { daily, monthly, yearly } = response.data;
@@ -157,11 +157,11 @@ const DashboardApp = ({searchQuery,setSearchQuery}) => {
     try {
       let response;
       if (newProduct._id) {
-        response = await axios.put(`http://localhost:5000/api/products/${newProduct._id}`, newProduct, {
+        response = await axios.put(`http://localhost:5001/api/products/${newProduct._id}`, newProduct, {
           headers: { Authorization: `Bearer ${authData.token}` },
         });
       } else {
-        response = await axios.post('http://localhost:5000/api/products', newProduct, {
+        response = await axios.post('http://localhost:5001/api/products', newProduct, {
           headers: { Authorization: `Bearer ${authData.token}` },
         });
 
@@ -186,7 +186,7 @@ const DashboardApp = ({searchQuery,setSearchQuery}) => {
   const handleDeleteProduct = async (id) => {
     console.log("token", `${authData.token}`)
     try {
-      const response = await axios.delete(`http://localhost:5000/api/products/${id}`, {
+      const response = await axios.delete(`http://localhost:5001/api/products/${id}`, {
         headers: { Authorization: `Bearer ${authData.token}` },
       });
       fetchProducts();

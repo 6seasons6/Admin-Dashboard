@@ -249,4 +249,39 @@ body {
   top:0;
   left: 0;
 }
+ /* Wrapper for full-page design */
+.orders-container {
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Table styling */
+.orders-table {
  
+  border: 3px solid black;
+  border-collapse: collapse;
+}
+
+/* Table header */
+.orders-table th {
+  border: 3px solid black;
+  padding: 10px;
+  background-color: #fff2df;;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* Table data */
+.orders-table td {
+  border: 3px solid black;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Table row */
+.orders-table tr {
+  background-color: #fff;
+}

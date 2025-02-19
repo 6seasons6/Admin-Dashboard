@@ -31,7 +31,7 @@ import SalesAnalytics from "./components/Analytics/SalesAnalytics";
 import Profile from './pages/Profile';
 import { useState } from "react";
 import DashboardApp from './pages/PersonalisedDashboard';
- 
+ import OrdersTable from './pages/OrdersTable';
  
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -75,7 +75,8 @@ const App = () => {
                
                 <Route path="/users" element={<UserList />} />
                 <Route path="/products" element={<ProductList />} />
- 
+                <Route path="/OrdersTable" element={<OrdersTable />} />
+
                 <Route path="/ProductList" element={<ProductList />} />
                 <Route path="/ProductForm" element={<ProductForm />} />
                 <Route path="/ProductTable" element={<ProductTable />} />

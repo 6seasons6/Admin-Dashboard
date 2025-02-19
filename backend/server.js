@@ -7,8 +7,10 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const usageRoutes = require('./routes/usageRoute');
 const Usage=require('./models/Usage');
-
 const Product = require('./models/Product');
+const axios = require('axios');
+// Inside Order.js
+
 
 require('dotenv').config();
 const app = express();
@@ -21,6 +23,7 @@ app.use('/api', usageRoutes);
 app.use(bodyParser.urlencoded({ extended: true }));
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 8080 });
+
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
@@ -42,15 +45,19 @@ wss.on('connection', (ws) => {
 ;
 const checkLowStock = async () => {
   try {
-    // Fetch all products from the database
-    const products = await Product.find({ stock: { $lte: 5 } }); // Low stock = 5 or below
+      // Fetch low-stock products
+      const lowStockProducts = await Product.find({ stock: { $lte: 5 } });
 
-    if (products.length > 0) {
-      // Send only if there are low-stock products
-      socket.emit("lowStockAlert", { type: "LOW_STOCK_ALERT", products });
-    }
+      if (lowStockProducts.length > 0) {
+          // Broadcast low stock alert to all connected WebSocket clients
+          wss.clients.forEach(client => {
+              if (client.readyState === WebSocket.OPEN) {
+                  client.send(JSON.stringify({ type: "LOW_STOCK_ALERT", products: lowStockProducts }));
+              }
+          });
+      }
   } catch (err) {
-    console.error("Error fetching products:", err);
+      console.error("Error fetching products:", err);
   }
 };
 
@@ -77,7 +84,68 @@ const userSchema = new mongoose.Schema({
 });
  
 const User = mongoose.model('User', userSchema); // Fixed naming issue
- 
+ //orders code
+ // Order Schema
+
+
+/// Order Schema
+const orderSchema = new mongoose.Schema({
+  username:String,
+  productId: String,
+  productName: String,  // ✅ Added
+  quantity: String,
+  amount: Number,
+  totalPrice: String,   // ✅ Added
+  paymentId: String,    // ✅ Added
+  userEmail: String,    // ✅ Added
+  status: { type: String, default: 'Pending' },
+}, { timestamps: true });
+
+const AdminOrder = mongoose.model('AdminOrder', orderSchema);
+
+// ✅ Route to Sync Orders from E-Commerce
+app.post('/api/sync-order', async (req, res) => {
+  try {
+    const {username, paymentId, amount, productName, quantity, totalPrice, userEmail, status } = req.body;
+
+    // Ensure all required fields are present
+    if (!username ||!paymentId || !amount || !productName || !quantity || !totalPrice) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const newOrder = new AdminOrder({
+      username,
+      paymentId,
+      amount,
+      productName,
+      quantity,
+      totalPrice,
+      userEmail: userEmail || "N/A",
+      status: status || "Pending",
+    });
+
+    await newOrder.save();
+
+    res.json({ message: 'Order added to admin dashboard', order: newOrder });
+  } catch (err) {
+    console.error('Error syncing order:', err);
+    res.status(500).json({ error: 'Failed to sync order', details: err.message });
+  }
+});
+
+
+// ✅ Route to Get Orders in Admin Dashboard
+app.get('/api/get-orders', async (req, res) => {
+  try {
+    const orders = await AdminOrder.find() || [];
+    res.json({ orders });
+  } catch (err) {
+    console.error('Error retrieving orders:', err);
+    res.status(500).json({ error: 'Failed to retrieve orders' });
+  }
+});
+
+
 // Registration Endpoint
 app.post('/api/auth/register', async (req, res) => {
   console.log('Request Body:', req.body);
@@ -702,6 +770,6 @@ app.delete('/api/products/:id', async (req, res) => {
 });
 
 // Start Server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
  

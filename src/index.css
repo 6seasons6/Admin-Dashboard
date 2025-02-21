@@ -9,10 +9,11 @@ body {
  
 .sidebar {
   width: 230px;
-  background-color: #fff2df;
+ /* Fallback color */
+ background: #fff2df;
   height: 100vh;
   padding: 10px 10px;
-  border-radius: 25px;
+  border-radius: 0;
   position:sticky;
   top:0;
   left: 0;
@@ -30,7 +31,7 @@ body {
 }
  
 .sidebar ul li a {
-  color: #000000;
+  color: black;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -54,12 +55,7 @@ body {
   flex-grow: 1;
 }
  
-.navbar {
-  background: #dee3e5;
-  color: #fff;
-  padding: 10px 20px;
-}
- 
+
 .footer {
   text-align: center;
   padding: 23px;
@@ -84,13 +80,13 @@ body {
   align-items: center;          
   padding: 10px 20px;
  
-  color: white;
+  color: black;
 }
  
 .navbar-title {
   font-size: 24px;
   font-weight: bold;
-  color: rgb(56, 56, 206);
+  color: blue;
 }
  
 .navbar {
@@ -99,7 +95,7 @@ body {
   align-items: center;
   padding: 10px 20px;
   justify-content: space-between;
-  color: white;
+  color: black;
 }
  
 .navbar-title {
@@ -115,9 +111,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: black;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for effect */
+  
   transition: background-color 0.3s;
 }
  
@@ -168,7 +164,7 @@ body {
 .icons{
   font-size: 25px;
   margin-right: 10px;
-  color:#383838
+  color:black
 }
  
 .image{
@@ -209,7 +205,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap:0rem;
- 
+ color: black;
 }
  
 .navbar .search-bar {
@@ -228,7 +224,7 @@ body {
   display: flex;
   align-items: center;
  margin-left:20rem;
-  gap: 3rem;
+  gap: 2rem;
 }
  
 .navbar .navbar-links .MuiButton-root {
@@ -248,13 +244,44 @@ body {
   background-color: #fff2df;
   height: 100vh;
   padding: 10px 10px;
-  border-radius: 25px;
+ 
   position:sticky;
   top:0;
   left: 0;
 }
+ /* Wrapper for full-page design */
+.orders-container {
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Table styling */
+.orders-table {
  
- 
- 
- 
- 
+  border: 3px solid black;
+  border-collapse: collapse;
+}
+
+/* Table header */
+.orders-table th {
+  border: 3px solid black;
+  padding: 10px;
+  background-color: #fff2df;;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* Table data */
+.orders-table td {
+  border: 3px solid black;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+}
+
+/* Table row */
+.orders-table tr {
+  background-color: #fff;
+}

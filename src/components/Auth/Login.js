@@ -97,7 +97,7 @@ localStorage.setItem('googleAuthToken', response.credential);
             >
               Forgot Password?
             </Link>
-            <Button variant="contained" type="submit" color="primary" sx={{ width: '100%' }}>
+            <Button variant="contained" type="submit" color="primary" sx={{  width: '7rem', marginLeft: '6rem' }}>
               Login
             </Button>
             <GoogleOAuthProvider clientId="381244195862-6drn1l84isgongnev4ihc7uje5mbqb27.apps.googleusercontent.com">

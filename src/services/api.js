@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
 //export const getUsers = () => fetch(`${API_URL}/users`).then((res) => res.json());
 export const getUsers = () => {
@@ -51,7 +51,7 @@ export const addProduct = (product) =>
 
 
     export const login = (email, password) =>
-      fetch(`http://localhost:5000/api/auth/login`, {
+      fetch(`http://localhost:5001/api/auth/login`, {
         method: 'POST',
         body: JSON.stringify({ email, password }),
         headers: { 'Content-Type': 'application/json' },
@@ -64,7 +64,7 @@ export const addProduct = (product) =>
     
 
   export const register = (username, email, password) =>
-    fetch(`http://localhost:5000/api/auth/register`, {
+    fetch(`http://localhost:5001/api/auth/register`, {
       method: 'POST',
       body: JSON.stringify({ username, email, password }),
       headers: { 'Content-Type': 'application/json' },
@@ -77,14 +77,14 @@ export const addProduct = (product) =>
 
 
     export const forgotPassword = (email) =>
-      fetch(`http://localhost:5000/api/auth/forgot-password`, {
+      fetch(`http://localhost:5001/api/auth/forgot-password`, {
         method: 'POST',
         body: JSON.stringify({ email }),
         headers: { 'Content-Type': 'application/json' },
       }).then((res) => res.json());
     
     export const resetPassword = (token, newPassword) =>
-      fetch(`http://localhost:5000/api/auth/reset-password`, {
+      fetch(`http://localhost:5001/api/auth/reset-password`, {
         method: 'POST',
         body: JSON.stringify({ token, newPassword }),
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +92,7 @@ export const addProduct = (product) =>
     
       
 export const getUserData = async (token) => {
-  const response = await fetch('http://localhost:5000/api/user', {
+  const response = await fetch('http://localhost:5001/api/user', {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,

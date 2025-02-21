@@ -25,12 +25,20 @@ import {
   Link,
 } from '@mui/material';
 import '../components/Sidebar';
+
+
+// Register all necessary components for charts
+Chart.register(...registerables);
+
+const DashboardApp = ({searchQuery,setSearchQuery}) => {
+
  
 // import { Description } from '@mui/icons-material';
 // Register all necessary components for charts
 Chart.register(...registerables);
  
 const DashboardApp = () => {
+
   const { authData } = useAuth(); // Assuming authData contains user token
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,7 +52,25 @@ const DashboardApp = () => {
   const [usageData, setUsageData] = useState({ daily: 0, monthly: 0, yearly: 0 }); // Usage data
   // const [screenTime, setScreenTime] = useState(0); // Track screen time
   const [startTime, setStartTime] = useState(null); // Track session start time
- 
+
+  const [message, setMessage] = useState(''); // State for messages
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // State for Snackbar open/close
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackbar message
+  const [errorMessage, setErrorMessage] = useState(''); // State for error messages
+  //const [filteredProducts, setFilteredProducts] = useState(products);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5001/api/products', {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    }
+  };
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -68,7 +94,7 @@ const DashboardApp = () => {
           const timeSpent = (end - start) / 1000/60/60; // Convert ms to hours
           if (timeSpent > 0) {
             axios.post(
-              'http://localhost:5000/api/track-usage',
+              'http://localhost:5001/api/track-usage',
               {
                 userId,
                 sessionDuration: timeSpent,
@@ -88,7 +114,7 @@ const DashboardApp = () => {
             return;
           }
           try {
-            const response = await axios.get(`http://localhost:5000/api/usage?userId=${userId}`, {
+            const response = await axios.get(`http://localhost:5001/api/usage?userId=${userId}`, {
               headers: { Authorization: `Bearer ${authData.token}` },
             });
             const { daily, monthly, yearly } = response.data;
@@ -133,6 +159,61 @@ const DashboardApp = () => {
     const { name, value } = e.target;
     setNewProduct((prev) => ({ ...prev, [name]: value }));
   };
+
+
+  const handleSaveProduct = async () => {
+    setErrorMessage('');
+
+    if (!newProduct.name || !newProduct.price || !newProduct.category || newProduct.stock === '') {
+      setSnackbarMessage('All fields are required.');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    try {
+      let response;
+      if (newProduct._id) {
+        response = await axios.put(`http://localhost:5001/api/products/${newProduct._id}`, newProduct, {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+      } else {
+        response = await axios.post('http://localhost:5001/api/products', newProduct, {
+          headers: { Authorization: `Bearer ${authData.token}` },
+        });
+
+      }
+      console.log("Product saved:", response.data);
+      setProducts((prev) =>
+        newProduct._id
+          ? prev.map((p) => (p._id === newProduct._id ? { ...newProduct } : p))
+          : [...prev, { ...newProduct, _id: prev.length + 1 }]
+      );
+      fetchProducts();
+      setSnackbarMessage(newProduct._id ? 'Product updated successfully!' : 'Product added successfully!');
+      setSnackbarOpen(true);
+      setIsModalOpen(false);
+      setNewProduct({ name: '', price: '', category: '', stock: '' });
+    } catch (error) {
+      setSnackbarMessage('Failed to save product.');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    console.log("token", `${authData.token}`)
+    try {
+      const response = await axios.delete(`http://localhost:5001/api/products/${id}`, {
+        headers: { Authorization: `Bearer ${authData.token}` },
+      });
+      fetchProducts();
+      setSnackbarMessage('Product deleted successfully!');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Failed to delete product:', error.response ? error.response.data : error.message);
+    }
+  };
+
+
  
   const handleSaveProduct = () => {
     setProducts([...products, { ...newProduct, id: products.length + 1 }]);
@@ -144,6 +225,7 @@ const DashboardApp = () => {
     setProducts(products.filter((product) => product.id !== id));
   };
  
+
   const handleEditProduct = (id) => {
     const product = products.find((p) => p.id === id);
     setNewProduct(product);
@@ -159,9 +241,10 @@ const DashboardApp = () => {
   };
  
   const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+    setSearchQuery(e.target.value); 
   };
  
+
   const handleCategoryFilterChange = (e) => {
     setFilterCategory(e.target.value);
   };
@@ -171,6 +254,18 @@ const DashboardApp = () => {
   };
  
   const filteredProducts = products.filter((product) => {
+
+    const productName = product.name ? product.name.toLowerCase() : '';
+    const matchesSearch = productName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = filterCategory ? product.category === filterCategory : true;
+    const matchesStock =
+      filterStock === '' ? true : filterStock === 'low' ? product.stock <= 50 : product.stock > 50;
+    return matchesSearch && matchesCategory && matchesStock;
+  });
+  
+
+  // Conditional check for showing only filtered products
+
     const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = filterCategory ? product.category === filterCategory : true;
     const matchesStock =
@@ -178,6 +273,7 @@ const DashboardApp = () => {
     return matchesSearch && matchesCategory && matchesStock;
   });
  
+
   if (loading) {
     return (
       <Box
@@ -248,17 +344,113 @@ const DashboardApp = () => {
   };
  
   return (
+
+    
+     
+
      <Box sx={{ display: 'flex', flexDirection:'column',minHeight: '100vh', background: '#bcaaa4 ' }}>
       <Box sx={{ flex: 1, padding: 3, color: '#2D3748' }}>
         <Typography variant="h4" gutterBottom></Typography>
+
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
+            background: 'white',
           }}
         >
+
+      
+   {/* Show Products at the Top **ONLY if Search is Performed** */}
+  {searchQuery.trim() !== "" && filteredProducts.length > 0 && (
+    <Grid container spacing={3} sx={{ marginTop: 2 }}>
+      {filteredProducts.map((product) => (
+        <Grid item xs={12} sm={4} key={product._id}>
+          <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="h6">{product.name}</Typography>
+              <Typography variant="body2">Price: ${product.price}</Typography>
+              <Typography variant="body2">Category: {product.category}</Typography>
+              <Typography variant="body2">Stock: {product.stock}</Typography>
+
+              {/* Edit and Delete Actions */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                <Button variant="outlined" onClick={() => handleEditProduct(product._id)}>
+                  Edit
+                </Button>
+                <Button variant="outlined" color="error" onClick={() => handleDeleteProduct(product._id)}>
+                  Delete
+                </Button>
+                {product.stock <= 5 && (
+                  <Button variant="contained" color="warning" onClick={() => handleReorderProduct(product.id)}>
+                    Reorder
+                  </Button>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
+  )}
+  
+  <Box sx={{ minHeight: '100vh', background: 'white' }}>
+            <Box sx={{ flex: 1, padding: 3, color: '#A0AEC0' }}>
+              <Typography variant="h4" gutterBottom color="#A0AEC0">
+                Welcome, {userData.name}
+              </Typography>
+              <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={() => setSnackbarOpen(false)} >
+                <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+                  <CheckCircleIcon sx={{ fontSize: 20, marginRight: 1 }} />
+                  {snackbarMessage}
+                </MuiAlert>
+              </Snackbar>
+
+              <Grid container spacing={3}>
+                {['Monthly Data', 'Daily Data', 'Yearly Data'].map((label, idx) => {
+                  const data =
+                    idx === 0
+                      ? `${usageData.monthly} hours`
+                      : idx === 1
+                        ? `${usageData.daily} hours`
+                        : `${usageData.yearly} hours`;
+                  const colors = [
+                    '#fff9c4',
+                    '#b9f6ca',
+                    '#ffe0b2',
+                  ];
+                  return (
+                    <Grid item xs={12} sm={4} key={idx}>
+                      <Card sx={{ height: '100%', backgroundColor: colors[idx], borderRadius: '8px', boxShadow: 3 }}>
+                        <CardContent>
+                          <Typography variant="h6" gutterBottom color="#A0AEC0">
+                            {label}
+                          </Typography>
+                          <Typography variant="h4" color="#2D3748">
+                            {data}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  );
+                })}
+
+                <Grid item xs={12} sm={6}>
+                  <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom color="#A0AEC0">
+                        Data Distribution
+                      </Typography>
+                      <Box sx={{ height: 250 }}>
+                        <Doughnut data={doughnutData} options={graphOptions} />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+
          <Box sx={{  minHeight: '100vh', background: 'linear-gradient(135deg, #A2D5AB, #F8C7B6)',
  
  }}>
@@ -372,6 +564,7 @@ const DashboardApp = () => {
             <Grid container spacing={3} sx={{ marginTop: 2 }}>
               {filteredProducts.map((product) => (
                 <Grid item xs={12} sm={4} key={product.id}>
+
                   <Card sx={{ height: '100%', background: '#F0F0F0', borderRadius: '8px', boxShadow: 3 }}>
                     <CardContent>
                       <Typography variant="h6">{product.name}</Typography>
@@ -396,6 +589,55 @@ const DashboardApp = () => {
                     </CardContent>
                   </Card>
                 </Grid>
+
+              </Grid>
+            </Box>
+
+            <Box sx={{ padding: 3 }}>
+              <Typography variant="h5" gutterBottom sx={{ color: 'black' }}>
+                Product Catalog Management
+              </Typography>
+              {/* Add New Product Button */}
+              <Button variant="contained" color="primary" onClick={handleAddProduct}>
+                Add New Product
+              </Button>
+
+              {/* Search & Filters */}
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginTop: 2,
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' },
+                }}
+              >
+                <TextField
+                  label="Search Products"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                  sx={{ marginRight: 2 }}
+                  InputLabelProps={{
+                    style: { color: 'black' }, // Set label color to white
+                  }}
+                />
+                <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
+                  <InputLabel sx={{ color: 'black' }}>Category</InputLabel>
+                  <Select value={filterCategory} onChange={handleCategoryFilterChange}>
+                    <MenuItem value="">All Categories</MenuItem>
+                    <MenuItem value="Category 1">Category 1</MenuItem>
+                    <MenuItem value="Category 2">Category 2</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl sx={{ minWidth: 150, '& .MuiOutlinedInput-notchedOutline': { borderColor: '#FFFFFF' } }}>
+                  <InputLabel sx={{ color: 'black' }}>Stock Status</InputLabel>
+                  <Select value={filterStock} onChange={handleStockFilterChange}>
+                    <MenuItem value="">All Stock</MenuItem>
+                    <MenuItem value="low">Low Stock</MenuItem>
+                    <MenuItem value="high">High Stock</MenuItem>
+                  </Select>
+                </FormControl>
+
               ))}
             </Grid>
           </Box>
@@ -445,6 +687,7 @@ const DashboardApp = () => {
                 <Button variant="contained" color="primary" onClick={handleSaveProduct}>
                   Save
                 </Button>
+
               </Box>
             </Box>
           </Modal>
@@ -465,6 +708,7 @@ const DashboardApp = () => {
             </Box>
           </Box>
         </Box>
+
       </Box>
     </Box>
 
@@ -641,6 +885,7 @@ const DashboardApp = () => {
 </Box>
     </Box>
     // </Box>
+
 
     
   );
